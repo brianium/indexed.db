@@ -29,7 +29,6 @@
 
        :blocked
        (fn []
-         (println "blocked")
          (db/close @*db))
 
        :error
@@ -38,7 +37,7 @@
          (done))}))})
 
 (deftest test-create-database
-  (is (satisfies? db/IDBDatabase @*db)))
+  (is (db/database? @*db)))
 
 (deftest test-getting-name
   (is (= database-name (db/name @*db))))
