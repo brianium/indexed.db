@@ -1,4 +1,5 @@
-(ns indexed.db.database.protocols)
+(ns indexed.db.database.protocols
+  (:refer-clojure :exclude [-name]))
 
 (defprotocol IDBDatabase
   (-close [self])
@@ -8,3 +9,4 @@
   (-delete-object-store [self name])
   (-object-store-names [self])
   (-transaction [self store-names mode options]))
+

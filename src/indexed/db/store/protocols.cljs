@@ -27,4 +27,5 @@
   (-create-index [self index-name key-path object-parameters])
   (-delete [self k])
   (-delete-index [self index-name])
-  (-index [self index-name]))
+  (-index [self index-name])
+  (-put [self item key]))

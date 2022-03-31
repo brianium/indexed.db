@@ -1,5 +1,6 @@
 (ns indexed.db.store-test
-  (:require [cljs.test :refer [deftest is async run-tests testing use-fixtures]]
+  (:require [cljs.test :refer [deftest is async use-fixtures]]
+            [indexed.db.cursor :as cursor]
             [indexed.db.database :as db]
             [indexed.db.events :as events]
             [indexed.db.key-range :as key-range]
@@ -265,4 +266,131 @@
   (let [todo-list (store "toDoList")]
     (is (store/index? (store/index todo-list "hours")))))
 
-(run-tests)
+(deftest test-open-cursor-no-args
+  (async
+   done
+   (let [todo-list (store "toDoList")]
+     (-> (store/open-cursor todo-list)
+         (events/on "success" (fn [e]
+                                (let [value (-> (request/from-event e)
+                                                (request/result)
+                                                (cursor/create-cursor-with-value todo-list)
+                                                (cursor/value))]
+                                  (is (= "Party hard" (.-taskTitle value)))
+                                  (done))))))))
+
+(deftest test-open-cursor-with-query
+  (async
+   done
+   (let [todo-list  (store "toDoList")
+         *iteration (atom 0)]
+     (-> (store/open-cursor todo-list (key-range/bound "Read that book" "Walk dog"))
+         (events/on "success" (fn [e]
+                                (let [cursor    (some-> (request/from-event e)
+                                                        (request/result)
+                                                        (cursor/create-cursor-with-value todo-list))
+                                      iteration (swap! *iteration inc)]
+                                  (if-not (< iteration 3)
+                                    (do
+                                      (is (nil? cursor))
+                                      (done))
+                                    (do
+                                      (cond
+                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (cursor/value cursor))))
+                                        (= iteration 2) (is (= "Walk dog" (.-taskTitle (cursor/value cursor))))
+                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                      (cursor/continue cursor))))))))))
+
+(deftest test-open-cursor-with-query-and-direction
+  (async
+   done
+   (let [todo-list  (store "toDoList")
+         *iteration (atom 0)]
+     (-> (store/open-cursor todo-list (key-range/upper-bound "Read that book") "prev")
+         (events/on "success" (fn [e]
+                                (let [cursor    (some-> (request/from-event e)
+                                                        (request/result)
+                                                        (cursor/create-cursor-with-value todo-list))
+                                      iteration (swap! *iteration inc)]
+                                  (if-not (< iteration 3)
+                                    (do
+                                      (is (nil? cursor))
+                                      (done))
+                                    (do
+                                      (cond
+                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (cursor/value cursor))))
+                                        (= iteration 2) (is (= "Party hard" (.-taskTitle (cursor/value cursor))))
+                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                      (cursor/continue cursor))))))))))
+
+(deftest test-open-key-cursor-no-args
+  (async
+   done
+   (let [todo-list (store "toDoList")]
+     (-> (store/open-key-cursor todo-list)
+         (events/on "success" (fn [e]
+                                (let [k (-> (request/from-event e)
+                                            (request/result)
+                                            (cursor/create-cursor todo-list)
+                                            (cursor/key))]
+                                  (is (= "Party hard" k))
+                                  (done))))))))
+
+(deftest test-open-key-cursor-with-query
+  (async
+   done
+   (let [todo-list  (store "toDoList")
+         *iteration (atom 0)]
+     (-> (store/open-key-cursor todo-list (key-range/bound "Read that book" "Walk dog"))
+         (events/on "success" (fn [e]
+                                (let [cursor    (some-> (request/from-event e)
+                                                        (request/result)
+                                                        (cursor/create-cursor todo-list))
+                                      iteration (swap! *iteration inc)]
+                                  (if-not (< iteration 3)
+                                    (do
+                                      (is (nil? cursor))
+                                      (done))
+                                    (do
+                                      (cond
+                                        (= iteration 1) (is (= "Read that book" (cursor/key cursor)))
+                                        (= iteration 2) (is (= "Walk dog" (cursor/key cursor)))
+                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                      (cursor/continue cursor))))))))))
+
+(deftest test-open-key-cursor-with-query-and-direction
+  (async
+   done
+   (let [todo-list  (store "toDoList")
+         *iteration (atom 0)]
+     (-> (store/open-key-cursor todo-list (key-range/upper-bound "Read that book") "prev")
+         (events/on "success" (fn [e]
+                                (let [cursor    (some-> (request/from-event e)
+                                                        (request/result)
+                                                        (cursor/create-cursor todo-list))
+                                      iteration (swap! *iteration inc)]
+                                  (if-not (< iteration 3)
+                                    (do
+                                      (is (nil? cursor))
+                                      (done))
+                                    (do
+                                      (cond
+                                        (= iteration 1) (is (= "Read that book" (cursor/key cursor)))
+                                        (= iteration 2) (is (= "Party hard" (cursor/key cursor)))
+                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                      (cursor/continue cursor))))))))))
+
+(deftest test-put
+  (async
+   done
+   (let [todo-list (store "toDoList" "readwrite")
+         task-req  (store/get todo-list "Walk dog")]
+     (events/on
+      task-req
+      "success"
+      (fn [e]
+        (let [request (request/from-event e)
+              task    (request/result request)]
+          (set! (.-notified task) "yes")
+          (-> (store/put todo-list task)
+              (events/on "success" done))))))))

@@ -3,7 +3,7 @@
             [indexed.db.events :as events :refer [EventTarget]]
             [indexed.db.store :as store]
             [indexed.db.transaction :as transaction])
-  (:refer-clojure :exclude [-name name]))
+  (:refer-clojure :exclude [name]))
 
 (defn clj->create-store-options
   [{:keys [key-path auto-increment]}]

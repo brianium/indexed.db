@@ -15,7 +15,6 @@
   [db-name db-version {:keys [upgradeneeded success]}]
   (let [open-request (factory/open db-name db-version)]
     (-> (events/on open-request "error" #(throw %))
-        (events/on "blocked" #(throw "Blocked"))
         (events/on "upgradeneeded" (handle-upgrade upgradeneeded))
         (events/on "success" #(success (request/result open-request))))))
 

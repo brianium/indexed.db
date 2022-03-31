@@ -209,7 +209,13 @@
   (-index
     [_ index-name]
     (create-index*
-     (.index idb-store index-name))))
+     (.index idb-store index-name)))
+  (-put
+    [_ item key]
+    (request/create-request
+     (if (some? key)
+       (.put idb-store item key)
+       (.put idb-store item)))))
 
 (defn store?
   [x]
@@ -256,3 +262,9 @@
 (defn index
   [store index-name]
   (proto/-index store index-name))
+
+(defn put
+  ([store item]
+   (proto/-put store item nil))
+  ([store item key]
+   (proto/-put store item key)))

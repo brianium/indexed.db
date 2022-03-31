@@ -1,12 +1,7 @@
 (ns indexed.db.request
   (:require [indexed.db.events :as events :refer [EventTarget]]
+            [indexed.db.request.protocols :as proto :refer [IDBRequest]]
             [indexed.db.transaction.protocols :refer [BelongsToTransaction]]))
-
-(defprotocol IDBRequest
-  (-error [self])
-  (-result [self])
-  (-source [self])
-  (-ready-state [self]))
 
 (deftype Request [request]
   EventTarget
@@ -38,20 +33,25 @@
 
 (defn error
   [db-request]
-  (-error db-request))
+  (proto/-error db-request))
 
 (defn result
   [db-request]
-  (-result db-request))
+  (proto/-result db-request))
 
 (defn source
   [db-request]
-  (-source db-request))
+  (proto/-source db-request))
 
 (defn ready-state
   [db-request]
-  (-ready-state db-request))
+  (proto/-ready-state db-request))
 
 (defn from-event
   [e]
   (create-request (.-target e)))
+
+(defn request
+  [belongs-to-request]
+  (create-request
+   (proto/-idb-request belongs-to-request)))
