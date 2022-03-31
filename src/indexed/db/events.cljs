@@ -30,3 +30,7 @@
   ([event-target type listener options]
    (.addEventListener (impl/-target event-target) type listener (clj->js options))
    event-target))
+
+(defn event-target?
+  [x]
+  (satisfies? impl/EventTarget x))

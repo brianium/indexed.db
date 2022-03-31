@@ -24,6 +24,10 @@
   (-delete [_] (request/create-request (.delete idb-cursor)))
   (-update [_ value] (request/create-request (.update idb-cursor value))))
 
+(defn cursor?
+  [x]
+  (satisfies? impl/IDBCursor x))
+
 (defn create-cursor
   [idb-cursor]
   (Cursor. idb-cursor))

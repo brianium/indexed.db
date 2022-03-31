@@ -1,12 +1,6 @@
 (ns indexed.db.store-test
   (:require [cljs.test :refer [deftest is async use-fixtures]]
-            [indexed.db.cursor :as cursor]
-            [indexed.db.database :as db]
-            [indexed.db.events :as events]
-            [indexed.db.key-range :as key-range]
-            [indexed.db.request :as request]
-            [indexed.db.store :as store]
-            [indexed.db.transaction :as txn]
+            [indexed.db :as indexed.db]
             [indexed.db.test-util :as util]))
 
 (defonce *db (atom nil))
@@ -17,7 +11,7 @@
 
 (defn transaction
   ([db mode]
-   (db/transaction db (db/object-store-names db) mode))
+   (indexed.db/transaction db (indexed.db/object-store-names db) mode))
   ([mode]
    (let [db @*db]
      (transaction db mode)))
@@ -26,9 +20,9 @@
 
 (defn store
   ([db store-name mode]
-   (txn/object-store (transaction db mode) store-name))
+   (indexed.db/object-store (transaction db mode) store-name))
   ([store-name mode]
-   (txn/object-store (transaction mode) store-name))
+   (indexed.db/object-store (transaction mode) store-name))
   ([store-name]
    (store store-name "readonly")))
 
@@ -38,7 +32,7 @@
     (loop [item (first items)
            rest (next items)]
       (when (some? item)
-        (events/on (store/add object-store (clj->js item)) "success"
+        (indexed.db/on (indexed.db/add object-store (clj->js item)) "success"
           (fn []
             (when (= (count items) (swap! *counter inc))
               (done))))
@@ -53,24 +47,24 @@
       database-version
       {:success
        (fn [idb]
-         (reset! *db (db/create-database idb))
+         (reset! *db (indexed.db/create-database idb))
          (done))
 
        :upgradeneeded
        (fn [idb]
-         (let [db    (db/create-database idb)
-               store (db/create-object-store db "toDoList" {:key-path "taskTitle"})]
-           (store/create-index store "hours" "hours" {:unique? false})
-           (store/create-index store "minutes" "minutes" {:unique? false})
-           (store/create-index store "day" "day" {:unique? false})
-           (store/create-index store "month" "month" {:unique? false})
-           (store/create-index store "year" "year" {:unique? false})
-           (store/create-index store "notified" "notified" {:unique? false})
-           (store/create-index store "deleteme" "deleteme" {:unique? false})))
+         (let [db    (indexed.db/create-database idb)
+               store (indexed.db/create-object-store db "toDoList" {:key-path "taskTitle"})]
+           (indexed.db/create-index store "hours" "hours" {:unique? false})
+           (indexed.db/create-index store "minutes" "minutes" {:unique? false})
+           (indexed.db/create-index store "day" "day" {:unique? false})
+           (indexed.db/create-index store "month" "month" {:unique? false})
+           (indexed.db/create-index store "year" "year" {:unique? false})
+           (indexed.db/create-index store "notified" "notified" {:unique? false})
+           (indexed.db/create-index store "deleteme" "deleteme" {:unique? false})))
 
        :blocked
        (fn []
-         (db/close @*db))
+         (indexed.db/close @*db))
 
        :error
        (fn []
@@ -109,17 +103,17 @@
    #(async
      done
      (-> (store "toDoList" "readwrite")
-         (store/clear)
-         (events/on "success" done)))})
+         (indexed.db/clear)
+         (indexed.db/on "success" done)))})
 
 (deftest test-index-names
   (let [todo-list   (store "toDoList")
-        index-names (set (store/index-names todo-list))]
+        index-names (set (indexed.db/index-names todo-list))]
     (is (= #{"hours" "minutes" "day" "month" "year" "notified" "deleteme"} index-names))))
 
 (deftest test-key-path
   (let [todo-list (store "toDoList")]
-    (is (= "taskTitle" (store/key-path todo-list)))))
+    (is (= "taskTitle" (indexed.db/key-path todo-list)))))
 
 (deftest test-name
   (let [todo-list (store "toDoList")]
@@ -127,43 +121,43 @@
 
 (deftest test-getting-transaction
   (let [todo-list (store "toDoList")
-        txn       (txn/transaction todo-list)]
-    (is (txn/transaction? txn))))
+        txn       (indexed.db/get-transaction todo-list)]
+    (is (indexed.db/transaction? txn))))
 
 (deftest test-auto-increment?
   (let [todo-list (store "toDoList")]
-    (is (false? (store/auto-increment? todo-list)))))
+    (is (false? (indexed.db/auto-increment? todo-list)))))
 
 (deftest test-count-all
   (async
    done
-   (-> (store/count (store "toDoList"))
-       (events/on "success" (fn [e]
-                              (is (= 3 (request/result
-                                        (request/from-event e))))
-                              (done))))))
+   (-> (indexed.db/count (store "toDoList"))
+       (indexed.db/on "success" (fn [e]
+                                  (is (= 3 (indexed.db/result
+                                            (indexed.db/event->request e))))
+                                  (done))))))
 
 (deftest test-count-by-key
   (async
    done
-   (-> (store/count (store "toDoList") "Walk dog")
-       (events/on "success" (fn [e]
-                              (is (= 1 (request/result
-                                        (request/from-event e))))
-                              (done))))))
+   (-> (indexed.db/count (store "toDoList") "Walk dog")
+       (indexed.db/on "success" (fn [e]
+                                  (is (= 1 (indexed.db/result
+                                            (indexed.db/event->request e))))
+                                  (done))))))
 
 (deftest test-delete-by-key
   (async
    done
    (let [txn       (transaction "readwrite")
-         todo-list (txn/object-store txn "toDoList")]
-     (store/delete todo-list "Walk dog")
-     (events/on txn "complete" (fn []
-                                 (is (true? true))
-                                 (done))))))
+         todo-list (indexed.db/object-store txn "toDoList")]
+     (indexed.db/delete todo-list "Walk dog")
+     (indexed.db/on txn "complete" (fn []
+                                     (is (true? true))
+                                     (done))))))
 
 (deftest test-delete-index
-  (db/close @*db) ;;; close to prevent blocking
+  (indexed.db/close @*db) ;;; close to prevent blocking
   (async
    done
    (util/open
@@ -171,111 +165,111 @@
     (inc database-version)
     {:success
      (fn [idb]
-       (reset! *db (db/create-database idb))
+       (reset! *db (indexed.db/create-database idb))
        (let [todo-list (store "toDoList")
-             names (set (store/index-names todo-list))]
+             names (set (indexed.db/index-names todo-list))]
          (is (false? (contains? names "deleteme")))
          (done)))
 
      :upgradeneeded
      (fn [_ txn]
-       (let [todo-list (txn/object-store txn "toDoList")]
-         (store/delete-index todo-list "deleteme")))})))
+       (let [todo-list (indexed.db/object-store txn "toDoList")]
+         (indexed.db/delete-index todo-list "deleteme")))})))
 
 (deftest test-get
   (async
    done
    (-> (store "toDoList")
-       (store/get "Walk dog")
-       (events/on "success" (fn [e]
-                              (is (= "Walk dog" (.-taskTitle (request/result
-                                                              (request/from-event e)))))
-                              (done))))))
+       (indexed.db/get "Walk dog")
+       (indexed.db/on "success" (fn [e]
+                                  (is (= "Walk dog" (.-taskTitle (indexed.db/result
+                                                                  (indexed.db/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-key
   (async
    done
    (-> (store "toDoList")
-       (store/get-key "Walk dog")
-       (events/on "success" (fn [e]
-                              (is (= "Walk dog" (request/result
-                                                 (request/from-event e))))
-                              (done))))))
+       (indexed.db/get-key "Walk dog")
+       (indexed.db/on "success" (fn [e]
+                                  (is (= "Walk dog" (indexed.db/result
+                                                     (indexed.db/event->request e))))
+                                  (done))))))
 
 (deftest test-get-all-no-key
   (async
    done
    (-> (store "toDoList")
-       (store/get-all)
-       (events/on "success" (fn [e]
-                              (is (= 3 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all)
+       (indexed.db/on "success" (fn [e]
+                              (is (= 3 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-with-key
   (async
    done
    (-> (store "toDoList")
-       (store/get-all (key-range/bound "Party hard" "Walk dog"))
-       (events/on "success" (fn [e]
-                              (is (= 3 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog"))
+       (indexed.db/on "success" (fn [e]
+                              (is (= 3 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-with-key-and-count
   (async
    done
    (-> (store "toDoList")
-       (store/get-all (key-range/bound "Party hard" "Walk dog") 2)
-       (events/on "success" (fn [e]
-                              (is (= 2 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog") 2)
+       (indexed.db/on "success" (fn [e]
+                              (is (= 2 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-no-key
   (async
    done
    (-> (store "toDoList")
-       (store/get-all-keys)
-       (events/on "success" (fn [e]
-                              (is (= 3 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all-keys)
+       (indexed.db/on "success" (fn [e]
+                              (is (= 3 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-with-key
   (async
    done
    (-> (store "toDoList")
-       (store/get-all-keys (key-range/bound "Party hard" "Walk dog"))
-       (events/on "success" (fn [e]
-                              (is (= 3 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog"))
+       (indexed.db/on "success" (fn [e]
+                              (is (= 3 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-with-key-and-count
   (async
    done
    (-> (store "toDoList")
-       (store/get-all-keys (key-range/bound "Party hard" "Walk dog") 2)
-       (events/on "success" (fn [e]
-                              (is (= 2 (count (request/result
-                                               (request/from-event e)))))
+       (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog") 2)
+       (indexed.db/on "success" (fn [e]
+                              (is (= 2 (count (indexed.db/result
+                                               (indexed.db/event->request e)))))
                               (done))))))
 
 (deftest test-getting-an-index
   (let [todo-list (store "toDoList")]
-    (is (store/index? (store/index todo-list "hours")))))
+    (is (indexed.db/index? (indexed.db/index todo-list "hours")))))
 
 (deftest test-open-cursor-no-args
   (async
    done
    (let [todo-list (store "toDoList")]
-     (-> (store/open-cursor todo-list)
-         (events/on "success" (fn [e]
-                                (let [value (-> (request/from-event e)
-                                                (request/result)
-                                                (cursor/create-cursor-with-value)
-                                                (cursor/value))]
+     (-> (indexed.db/open-cursor todo-list)
+         (indexed.db/on "success" (fn [e]
+                                (let [value (-> (indexed.db/event->request e)
+                                                (indexed.db/result)
+                                                (indexed.db/create-cursor-with-value)
+                                                (indexed.db/value))]
                                   (is (= "Party hard" (.-taskTitle value)))
                                   (done))))))))
 
@@ -284,11 +278,11 @@
    done
    (let [todo-list  (store "toDoList")
          *iteration (atom 0)]
-     (-> (store/open-cursor todo-list (key-range/bound "Read that book" "Walk dog"))
-         (events/on "success" (fn [e]
-                                (let [cursor    (some-> (request/from-event e)
-                                                        (request/result)
-                                                        (cursor/create-cursor-with-value))
+     (-> (indexed.db/open-cursor todo-list (indexed.db/bound "Read that book" "Walk dog"))
+         (indexed.db/on "success" (fn [e]
+                                (let [cursor    (some-> (indexed.db/event->request e)
+                                                        (indexed.db/result)
+                                                        (indexed.db/create-cursor-with-value))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -296,21 +290,21 @@
                                       (done))
                                     (do
                                       (cond
-                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (cursor/value cursor))))
-                                        (= iteration 2) (is (= "Walk dog" (.-taskTitle (cursor/value cursor))))
+                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
+                                        (= iteration 2) (is (= "Walk dog" (.-taskTitle (indexed.db/value cursor))))
                                         :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (cursor/continue cursor))))))))))
+                                      (indexed.db/continue cursor))))))))))
 
 (deftest test-open-cursor-with-query-and-direction
   (async
    done
    (let [todo-list  (store "toDoList")
          *iteration (atom 0)]
-     (-> (store/open-cursor todo-list (key-range/upper-bound "Read that book") "prev")
-         (events/on "success" (fn [e]
-                                (let [cursor    (some-> (request/from-event e)
-                                                        (request/result)
-                                                        (cursor/create-cursor-with-value))
+     (-> (indexed.db/open-cursor todo-list (indexed.db/upper-bound "Read that book") "prev")
+         (indexed.db/on "success" (fn [e]
+                                (let [cursor    (some-> (indexed.db/event->request e)
+                                                        (indexed.db/result)
+                                                        (indexed.db/create-cursor-with-value))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -318,21 +312,21 @@
                                       (done))
                                     (do
                                       (cond
-                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (cursor/value cursor))))
-                                        (= iteration 2) (is (= "Party hard" (.-taskTitle (cursor/value cursor))))
+                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
+                                        (= iteration 2) (is (= "Party hard" (.-taskTitle (indexed.db/value cursor))))
                                         :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (cursor/continue cursor))))))))))
+                                      (indexed.db/continue cursor))))))))))
 
 (deftest test-open-key-cursor-no-args
   (async
    done
    (let [todo-list (store "toDoList")]
-     (-> (store/open-key-cursor todo-list)
-         (events/on "success" (fn [e]
-                                (let [k (-> (request/from-event e)
-                                            (request/result)
-                                            (cursor/create-cursor)
-                                            (cursor/key))]
+     (-> (indexed.db/open-key-cursor todo-list)
+         (indexed.db/on "success" (fn [e]
+                                (let [k (-> (indexed.db/event->request e)
+                                            (indexed.db/result)
+                                            (indexed.db/create-cursor)
+                                            (indexed.db/key))]
                                   (is (= "Party hard" k))
                                   (done))))))))
 
@@ -341,11 +335,11 @@
    done
    (let [todo-list  (store "toDoList")
          *iteration (atom 0)]
-     (-> (store/open-key-cursor todo-list (key-range/bound "Read that book" "Walk dog"))
-         (events/on "success" (fn [e]
-                                (let [cursor    (some-> (request/from-event e)
-                                                        (request/result)
-                                                        (cursor/create-cursor))
+     (-> (indexed.db/open-key-cursor todo-list (indexed.db/bound "Read that book" "Walk dog"))
+         (indexed.db/on "success" (fn [e]
+                                (let [cursor    (some-> (indexed.db/event->request e)
+                                                        (indexed.db/result)
+                                                        (indexed.db/create-cursor))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -353,21 +347,21 @@
                                       (done))
                                     (do
                                       (cond
-                                        (= iteration 1) (is (= "Read that book" (cursor/key cursor)))
-                                        (= iteration 2) (is (= "Walk dog" (cursor/key cursor)))
+                                        (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
+                                        (= iteration 2) (is (= "Walk dog" (indexed.db/key cursor)))
                                         :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (cursor/continue cursor))))))))))
+                                      (indexed.db/continue cursor))))))))))
 
 (deftest test-open-key-cursor-with-query-and-direction
   (async
    done
    (let [todo-list  (store "toDoList")
          *iteration (atom 0)]
-     (-> (store/open-key-cursor todo-list (key-range/upper-bound "Read that book") "prev")
-         (events/on "success" (fn [e]
-                                (let [cursor    (some-> (request/from-event e)
-                                                        (request/result)
-                                                        (cursor/create-cursor))
+     (-> (indexed.db/open-key-cursor todo-list (indexed.db/upper-bound "Read that book") "prev")
+         (indexed.db/on "success" (fn [e]
+                                (let [cursor    (some-> (indexed.db/event->request e)
+                                                        (indexed.db/result)
+                                                        (indexed.db/create-cursor))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -375,22 +369,22 @@
                                       (done))
                                     (do
                                       (cond
-                                        (= iteration 1) (is (= "Read that book" (cursor/key cursor)))
-                                        (= iteration 2) (is (= "Party hard" (cursor/key cursor)))
+                                        (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
+                                        (= iteration 2) (is (= "Party hard" (indexed.db/key cursor)))
                                         :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (cursor/continue cursor))))))))))
+                                      (indexed.db/continue cursor))))))))))
 
 (deftest test-put
   (async
    done
    (let [todo-list (store "toDoList" "readwrite")
-         task-req  (store/get todo-list "Walk dog")]
-     (events/on
+         task-req  (indexed.db/get todo-list "Walk dog")]
+     (indexed.db/on
       task-req
       "success"
       (fn [e]
-        (let [request (request/from-event e)
-              task    (request/result request)]
+        (let [request (indexed.db/event->request e)
+              task    (indexed.db/result request)]
           (set! (.-notified task) "yes")
-          (-> (store/put todo-list task)
-              (events/on "success" done))))))))
+          (-> (indexed.db/put todo-list task)
+              (indexed.db/on "success" done))))))))

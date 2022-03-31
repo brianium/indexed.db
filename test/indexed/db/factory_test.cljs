@@ -1,6 +1,6 @@
 (ns indexed.db.factory-test
   (:require [cljs.test :refer [deftest is async use-fixtures]]
-            [indexed.db.factory :as factory]
+            [indexed.db :as factory]
             [indexed.db.test-util :as util]))
 
 (defonce *idb (atom nil))

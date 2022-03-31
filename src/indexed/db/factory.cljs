@@ -28,6 +28,10 @@
                      (array? result) (->> array-seq (map dict->map))
                      :always         (fn-1))))))))
 
+(defn factory?
+  [x]
+  (satisfies? impl/IDBFactory x))
+
 (defn create-factory []
   (Factory. js/indexedDB))
 

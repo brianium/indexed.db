@@ -1,4 +1,4 @@
-(ns indexed.db.transaction
+(ns indexed.db.txn
   (:require [indexed.db.store :as store]
             [indexed.db.impl.protocols :as impl]))
 

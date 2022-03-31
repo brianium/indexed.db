@@ -2,7 +2,7 @@
   (:require [indexed.db.events :as events]
             [indexed.db.factory :as factory]
             [indexed.db.request :as request]
-            [indexed.db.transaction :as txn]))
+            [indexed.db.txn :as txn]))
 
 (defn handle-upgrade
   [fn-2]

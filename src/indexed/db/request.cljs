@@ -26,8 +26,11 @@
     [_]
     (.-transaction request)))
 
+(defn request?
+  [x]
+  (satisfies? impl/IDBRequest x))
+
 (defn create-request
-  "Create an IDBRequest"
   [request]
   (Request. request))
 

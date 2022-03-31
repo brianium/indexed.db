@@ -1,6 +1,6 @@
 (ns indexed.db.database-test
   (:require [cljs.test :refer [deftest is async testing use-fixtures]]
-            [indexed.db.database :as db]
+            [indexed.db :as db]
             [indexed.db.test-util :as util]))
 
 (defonce *db (atom nil))

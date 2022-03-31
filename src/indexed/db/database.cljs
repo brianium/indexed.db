@@ -1,7 +1,7 @@
 (ns indexed.db.database
   (:require [indexed.db.impl.protocols :as impl]
             [indexed.db.store :as store]
-            [indexed.db.transaction :as transaction])
+            [indexed.db.txn :as transaction])
   (:refer-clojure :exclude [name]))
 
 (defn clj->create-store-options
@@ -50,7 +50,7 @@
 
 (defn create-database
   [idb]
-  (->Database idb))
+  (Database. idb))
 
 (defn close
   [db]
