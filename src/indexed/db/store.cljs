@@ -1,9 +1,8 @@
 (ns indexed.db.store
   (:require [indexed.db.key-range :as key-range]
             [indexed.db.request :as request]
-            [indexed.db.store.protocols :as proto :refer [ReadableObjectStore IDBIndex IDBObjectStore]]
-            [indexed.db.transaction.protocols :refer [BelongsToTransaction]])
-  (:refer-clojure :exclude [name count get]))
+            [indexed.db.impl.protocols :as impl])
+  (:refer-clojure :exclude [count get]))
 
 (defn key*
   [x]
@@ -12,8 +11,10 @@
     x))
 
 (deftype BaseObjectStore [store]
-  ReadableObjectStore
+  INamed
   (-name [_] (.-name store))
+
+  impl/ReadableObjectStore
   (-key-path [_] (.-keyPath store))
   (-count
     [_ query]
@@ -51,31 +52,27 @@
       (some? query)         (request/create-request (.openKeyCursor store (key* query)))
       :else                 (request/create-request (.openKeyCursor store)))))
 
-(defn name
-  [store]
-  (proto/-name store))
-
 (defn key-path
   [store]
-  (proto/-key-path store))
+  (impl/-key-path store))
 
 (defn count
   ([store query]
-   (proto/-count store query))
+   (impl/-count store query))
   ([store]
-   (proto/-count store nil)))
+   (impl/-count store nil)))
 
 (defn get
   [store key]
-  (proto/-get store key))
+  (impl/-get store key))
 
 (defn get-key
   [store key]
-  (proto/-get-key store key))
+  (impl/-get-key store key))
 
 (defn get-all
   ([store query count]
-   (proto/-get-all store query count))
+   (impl/-get-all store query count))
   ([store query]
    (get-all store query nil))
   ([store]
@@ -83,7 +80,7 @@
 
 (defn get-all-keys
   ([store query count]
-   (proto/-get-all-keys store query count))
+   (impl/-get-all-keys store query count))
   ([store query]
    (get-all-keys store query nil))
   ([store]
@@ -91,7 +88,7 @@
 
 (defn open-cursor
   ([store query direction]
-   (proto/-open-cursor store query direction))
+   (impl/-open-cursor store query direction))
   ([store query]
    (open-cursor store query nil))
   ([store]
@@ -99,15 +96,17 @@
 
 (defn open-key-cursor
   ([store query direction]
-   (proto/-open-key-cursor store query direction))
+   (impl/-open-key-cursor store query direction))
   ([store query]
    (open-key-cursor store query nil))
   ([store]
    (open-key-cursor store nil nil)))
 
 (deftype Index [object-store idb-index]
-  ReadableObjectStore
+  INamed
   (-name [_] (name object-store))
+
+  impl/ReadableObjectStore
   (-key-path [_] (key-path object-store))
   (-count [_ query] (count object-store query))
   (-get [_ key] (get object-store key))
@@ -117,42 +116,42 @@
   (-open-cursor [_ query direction] (open-cursor object-store query direction))
   (-open-key-cursor [_ query direction] (open-key-cursor object-store query direction))
 
-  IDBIndex
+  impl/IDBIndex
   (-auto-locale? [_] (.isAutoLocale idb-index))
   (-locale [_] (.locale idb-index))
-  (-object-store [_] (.objectStore idb-index))
+  (-object-store-name [_] (.objectStore idb-index))
   (-multi-entry? [_] (.multiEntry idb-index))
   (-unique? [_] (.unique idb-index)))
 
 (defn index?
   [x]
-  (satisfies? IDBIndex x))
+  (satisfies? impl/IDBIndex x))
 
 (defn create-index*
   [idb-index]
   (-> idb-index
-      (->BaseObjectStore)
-      (->Index idb-index)))
+      (BaseObjectStore.)
+      (Index. idb-index)))
 
 (defn auto-locale?
   [index]
-  (proto/-auto-locale? index))
+  (impl/-auto-locale? index))
 
 (defn locale
   [index]
-  (proto/-locale index))
+  (impl/-locale index))
 
-(defn object-store
+(defn object-store-name
   [index]
-  (proto/-object-store index))
+  (impl/-object-store-name index))
 
 (defn multi-entry?
   [index]
-  (proto/-multi-entry? index))
+  (impl/-multi-entry? index))
 
 (defn unique?
   [index]
-  (proto/-unique? index))
+  (impl/-unique? index))
 
 (defn clj->index-parameters
   [{:keys [unique? multi-entry? locale]}]
@@ -166,11 +165,13 @@
     params))
 
 (deftype ObjectStore [object-store idb-store]
-  BelongsToTransaction
+  INamed
+  (-name [_] (name object-store))
+
+  impl/BelongsToTransaction
   (-idb-transaction [_] (.-transaction idb-store))
 
-  ReadableObjectStore
-  (-name [_] (name object-store))
+  impl/ReadableObjectStore
   (-key-path [_] (key-path object-store))
   (-count [_ query] (count object-store query))
   (-get [_ key] (get object-store key))
@@ -180,7 +181,7 @@
   (-open-cursor [_ query direction] (open-cursor object-store query direction))
   (-open-key-cursor [_ query direction] (open-key-cursor object-store query direction))
 
-  IDBObjectStore
+  impl/IDBObjectStore
   (-index-names [_] (array-seq (.-indexNames idb-store)))
   (-auto-increment? [_] (.-autoIncrement idb-store))
   (-add
@@ -198,7 +199,7 @@
                       key-path)
           idb-index (.createIndex idb-store index-name key-path* (clj->index-parameters object-parameters))]
       (create-index* idb-index)))
-  (-delete
+  (-delete-item
     [_ k]
     (request/create-request
      (.delete idb-store (key* k))))
@@ -219,52 +220,52 @@
 
 (defn store?
   [x]
-  (satisfies? IDBObjectStore x))
+  (satisfies? impl/IDBObjectStore x))
 
 (defn create-object-store
   [idb-store]
   (-> idb-store
-      (->BaseObjectStore)
-      (->ObjectStore idb-store)))
+      (BaseObjectStore.)
+      (ObjectStore. idb-store)))
 
 (defn index-names
   [store]
-  (proto/-index-names store))
+  (impl/-index-names store))
 
 (defn auto-increment?
   [store]
-  (proto/-auto-increment? store))
+  (impl/-auto-increment? store))
 
 (defn add
   ([store value key]
-   (proto/-add store value key))
+   (impl/-add store value key))
   ([store value]
    (add store value nil)))
 
 (defn clear
   [store]
-  (proto/-clear store))
+  (impl/-clear store))
 
 (defn create-index
   ([store index-name key-path object-parameters]
-   (proto/-create-index store index-name key-path object-parameters))
+   (impl/-create-index store index-name key-path object-parameters))
   ([store index-name key-path]
    (create-index store index-name key-path {})))
 
 (defn delete
   [store k]
-  (proto/-delete store k))
+  (impl/-delete-item store k))
 
 (defn delete-index
   [store index-name]
-  (proto/-delete-index store index-name))
+  (impl/-delete-index store index-name))
 
 (defn index
   [store index-name]
-  (proto/-index store index-name))
+  (impl/-index store index-name))
 
 (defn put
   ([store item]
-   (proto/-put store item nil))
+   (impl/-put store item nil))
   ([store item key]
-   (proto/-put store item key)))
+   (impl/-put store item key)))

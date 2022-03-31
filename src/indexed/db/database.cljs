@@ -1,6 +1,5 @@
 (ns indexed.db.database
-  (:require [indexed.db.database.protocols :as proto :refer [IDBDatabase]]
-            [indexed.db.events :as events :refer [EventTarget]]
+  (:require [indexed.db.impl.protocols :as impl]
             [indexed.db.store :as store]
             [indexed.db.transaction :as transaction])
   (:refer-clojure :exclude [name]))
@@ -21,11 +20,14 @@
     options))
 
 (deftype Database [db]
-  EventTarget
+  impl/EventTarget
   (-target [_] db)
-  IDBDatabase
-  (-close [_] (.close db))
+
+  INamed
   (-name [_] (.-name db))
+
+  impl/IDBDatabase
+  (-close [_] (.close db))
   (-version [_] (.-version db))
   (-create-object-store
     [_ name options]
@@ -44,7 +46,7 @@
 
 (defn database?
   [x]
-  (satisfies? IDBDatabase x))
+  (satisfies? impl/IDBDatabase x))
 
 (defn create-database
   [idb]
@@ -52,33 +54,29 @@
 
 (defn close
   [db]
-  (proto/-close db))
+  (impl/-close db))
 
 (defn create-object-store
   ([db name options]
-   (proto/-create-object-store db name options))
+   (impl/-create-object-store db name options))
   ([db name]
    (create-object-store db name nil)))
 
 (defn delete-object-store
   [db name]
-  (proto/-delete-object-store db name))
+  (impl/-delete-object-store db name))
 
 (defn object-store-names
   [db]
-  (proto/-object-store-names db))
-
-(defn name
-  [db]
-  (proto/-name db))
+  (impl/-object-store-names db))
 
 (defn version
   [db]
-  (proto/-version db))
+  (impl/-version db))
 
 (defn transaction
   ([db store-names mode options]
-   (proto/-transaction db store-names mode options))
+   (impl/-transaction db store-names mode options))
   ([db store-names mode]
    (transaction db store-names mode {}))
   ([db store-names]

@@ -1,26 +1,26 @@
 (ns indexed.db.key-range
-  (:require [indexed.db.key-range.protocols :as proto :refer [IDBKeyRange]]))
+  (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype KeyRange [key-range]
-  IDBKeyRange
+  impl/IDBKeyRange
   (-includes [_ k] (.includes key-range k))
   (-idb-key-range [_] key-range))
 
 (defn key-range?
   [x]
-  (satisfies? IDBKeyRange x))
+  (satisfies? impl/IDBKeyRange x))
 
 (defn idb-key-range
   [key-range]
-  (proto/-idb-key-range key-range))
+  (impl/-idb-key-range key-range))
 
 (defn create-key-range
   [key-range]
-  (->KeyRange key-range))
+  (KeyRange. key-range))
 
 (defn includes
   [key-range k]
-  (proto/-includes key-range k))
+  (impl/-includes key-range k))
 
 (defn bound
   ([lower upper lower-open? upper-open?]

@@ -1,27 +1,27 @@
 (ns indexed.db.request
-  (:require [indexed.db.events :as events :refer [EventTarget]]
-            [indexed.db.request.protocols :as proto :refer [IDBRequest]]
-            [indexed.db.transaction.protocols :refer [BelongsToTransaction]]))
+  (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype Request [request]
-  EventTarget
+  impl/EventTarget
   (-target [_] request)
 
-  IDBRequest
+  impl/BelongsToSource
+  (-source
+   [_]
+   (.-source request))
+
+  impl/IDBRequest
   (-error
     [_]
     (.-error request))
   (-result
     [_]
     (.-result request))
-  (-source
-    [_]
-    (.-source request))
   (-ready-state
     [_]
     (.-readyState request))
   
-  BelongsToTransaction
+  impl/BelongsToTransaction
   (-idb-transaction
     [_]
     (.-transaction request)))
@@ -29,29 +29,20 @@
 (defn create-request
   "Create an IDBRequest"
   [request]
-  (->Request request))
+  (Request. request))
 
 (defn error
   [db-request]
-  (proto/-error db-request))
+  (impl/-error db-request))
 
 (defn result
   [db-request]
-  (proto/-result db-request))
-
-(defn source
-  [db-request]
-  (proto/-source db-request))
+  (impl/-result db-request))
 
 (defn ready-state
   [db-request]
-  (proto/-ready-state db-request))
+  (impl/-ready-state db-request))
 
 (defn from-event
   [e]
   (create-request (.-target e)))
-
-(defn request
-  [belongs-to-request]
-  (create-request
-   (proto/-idb-request belongs-to-request)))

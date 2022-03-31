@@ -1,30 +1,29 @@
 (ns indexed.db.transaction
-  (:require [indexed.db.events :as events :refer [EventTarget]]
-            [indexed.db.store :as store]
-            [indexed.db.transaction.protocols :as proto]))
+  (:require [indexed.db.store :as store]
+            [indexed.db.impl.protocols :as impl]))
 
 (deftype Transaction [transaction]
-  proto/IDBTransaction
+  impl/IDBTransaction
   (-object-store
     [_ name]
     (store/create-object-store
      (.objectStore transaction name)))
   
-  EventTarget
+  impl/EventTarget
   (-target [_] transaction))
 
 (defn transaction?
   [x]
-  (satisfies? proto/IDBTransaction x))
+  (satisfies? impl/IDBTransaction x))
 
 (defn create-transaction
   [idb-transaction]
-  (->Transaction idb-transaction))
+  (Transaction. idb-transaction))
 
 (defn object-store
   [txn name]
-  (proto/-object-store txn name))
+  (impl/-object-store txn name))
 
 (defn transaction
   [belongs-to-txn]
-  (create-transaction (proto/-idb-transaction belongs-to-txn)))
+  (create-transaction (impl/-idb-transaction belongs-to-txn)))

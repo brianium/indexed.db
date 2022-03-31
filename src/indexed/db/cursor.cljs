@@ -1,25 +1,16 @@
 (ns indexed.db.cursor
   (:require  [indexed.db.request :as request]
-             [indexed.db.request.protocols :refer [BelongsToRequest]])
-  (:refer-clojure :exclude [-key key update]))
+             [indexed.db.impl.protocols :as impl])
+  (:refer-clojure :exclude [key update]))
 
-(defprotocol IDBCursor
-  (-source [self])
-  (-direction [self])
-  (-key [self])
-  (-primary-key [self])
-  (-advance [self count])
-  (-continue [self k])
-  (-continue-primary-key [self k primary-key])
-  (-delete [self])
-  (-update [self value]))
-
-(deftype Cursor [idb-cursor source]
-  BelongsToRequest
+(deftype Cursor [idb-cursor]
+  impl/BelongsToRequest
   (-idb-request [_] (.-request idb-cursor))
 
-  IDBCursor
-  (-source [_] source)
+  impl/BelongsToSource
+  (-source [_] (.-source idb-cursor))
+
+  impl/IDBCursor
   (-direction [_] (.-direction idb-cursor))
   (-key [_] (.-key idb-cursor))
   (-primary-key [_] (.-primaryKey idb-cursor))
@@ -34,56 +25,51 @@
   (-update [_ value] (request/create-request (.update idb-cursor value))))
 
 (defn create-cursor
-  [idb-cursor source]
-  (->Cursor idb-cursor source))
-
-(defn source
-  [cursor]
-  (-source cursor))
+  [idb-cursor]
+  (Cursor. idb-cursor))
 
 (defn direction
   [cursor]
-  (-direction cursor))
+  (impl/-direction cursor))
 
 (defn key
   [cursor]
-  (-key cursor))
+  (impl/-key cursor))
 
 (defn primary-key
   [cursor]
-  (-primary-key cursor))
+  (impl/-primary-key cursor))
 
 (defn advance
   [cursor count]
-  (-advance cursor count))
+  (impl/-advance cursor count))
 
 (defn continue
   ([cursor k]
-   (-continue cursor k))
+   (impl/-continue cursor k))
   ([cursor]
    (continue cursor nil)))
 
 (defn continue-primary-key
   [cursor k primary-key]
-  (-continue-primary-key cursor k primary-key))
+  (impl/-continue-primary-key cursor k primary-key))
 
 (defn delete
   [cursor]
-  (-delete cursor))
+  (impl/-delete cursor))
 
 (defn update
   [cursor value]
-  (-update cursor value))
-
-(defprotocol IDBCursorWithValue
-  (-value [self]))
+  (impl/-update cursor value))
 
 (deftype CursorWithValue [cursor idb-cursor]
-  BelongsToRequest
+  impl/BelongsToRequest
   (-idb-request [_] (.-request idb-cursor))
+
+  impl/BelongsToSource
+  (-source [_] (.-source idb-cursor))
   
-  IDBCursor
-  (-source [_] (source cursor))
+  impl/IDBCursor
   (-direction [_] (direction cursor))
   (-key [_] (key cursor))
   (-primary-key [_] (primary-key cursor))
@@ -93,15 +79,15 @@
   (-delete [_] (delete cursor))
   (-update [_ value] (update cursor value))
   
-  IDBCursorWithValue
+  impl/IDBCursorWithValue
   (-value [_] (.-value idb-cursor)))
 
 (defn create-cursor-with-value
-  [idb-cursor source]
-  (->CursorWithValue
-   (create-cursor idb-cursor source)
+  [idb-cursor]
+  (CursorWithValue.
+   (create-cursor idb-cursor)
    idb-cursor))
 
 (defn value
   [cursor-with-value]
-  (-value cursor-with-value))
+  (impl/-value cursor-with-value))

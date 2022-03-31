@@ -123,7 +123,7 @@
 
 (deftest test-name
   (let [todo-list (store "toDoList")]
-    (is (= "toDoList" (store/name todo-list)))))
+    (is (= "toDoList" (name todo-list)))))
 
 (deftest test-getting-transaction
   (let [todo-list (store "toDoList")
@@ -274,7 +274,7 @@
          (events/on "success" (fn [e]
                                 (let [value (-> (request/from-event e)
                                                 (request/result)
-                                                (cursor/create-cursor-with-value todo-list)
+                                                (cursor/create-cursor-with-value)
                                                 (cursor/value))]
                                   (is (= "Party hard" (.-taskTitle value)))
                                   (done))))))))
@@ -288,7 +288,7 @@
          (events/on "success" (fn [e]
                                 (let [cursor    (some-> (request/from-event e)
                                                         (request/result)
-                                                        (cursor/create-cursor-with-value todo-list))
+                                                        (cursor/create-cursor-with-value))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -310,7 +310,7 @@
          (events/on "success" (fn [e]
                                 (let [cursor    (some-> (request/from-event e)
                                                         (request/result)
-                                                        (cursor/create-cursor-with-value todo-list))
+                                                        (cursor/create-cursor-with-value))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -331,7 +331,7 @@
          (events/on "success" (fn [e]
                                 (let [k (-> (request/from-event e)
                                             (request/result)
-                                            (cursor/create-cursor todo-list)
+                                            (cursor/create-cursor)
                                             (cursor/key))]
                                   (is (= "Party hard" k))
                                   (done))))))))
@@ -345,7 +345,7 @@
          (events/on "success" (fn [e]
                                 (let [cursor    (some-> (request/from-event e)
                                                         (request/result)
-                                                        (cursor/create-cursor todo-list))
+                                                        (cursor/create-cursor))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do
@@ -367,7 +367,7 @@
          (events/on "success" (fn [e]
                                 (let [cursor    (some-> (request/from-event e)
                                                         (request/result)
-                                                        (cursor/create-cursor todo-list))
+                                                        (cursor/create-cursor))
                                       iteration (swap! *iteration inc)]
                                   (if-not (< iteration 3)
                                     (do

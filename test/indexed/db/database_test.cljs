@@ -40,7 +40,7 @@
   (is (db/database? @*db)))
 
 (deftest test-getting-name
-  (is (= database-name (db/name @*db))))
+  (is (= database-name (name @*db))))
 
 (deftest test-getting-version
   (is (= database-version (db/version @*db))))
