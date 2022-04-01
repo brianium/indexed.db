@@ -79,8 +79,7 @@
 
 (defprotocol IDBVersionChangeEvent
   (-new-version [self])
-  (-old-version [self])
-  (-request [self]))
+  (-old-version [self]))
 
 (defprotocol EventTarget
   (-target [self]))

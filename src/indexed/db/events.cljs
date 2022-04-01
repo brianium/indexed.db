@@ -1,15 +1,17 @@
 (ns indexed.db.events
   (:require [indexed.db.impl.protocols :as impl]))
 
-(defrecord VersionChangeEvent [js-event create-request]
+(defrecord VersionChangeEvent [js-event]
   impl/IDBVersionChangeEvent
   (-new-version [_] (.-newVersion js-event))
   (-old-version [_] (.-oldVersion js-event))
-  (-request [_] (create-request (.-target js-event))))
+  
+  impl/BelongsToRequest
+  (-idb-request [_] (.-target js-event)))
 
 (defn create-version-change-event
-  [js-event create-request]
-  (->VersionChangeEvent js-event create-request))
+  [js-event]
+  (->VersionChangeEvent js-event))
 
 (defn new-version
   [version-change-event]
@@ -18,10 +20,6 @@
 (defn old-version
   [version-change-event]
   (impl/-old-version version-change-event))
-
-(defn request
-  [version-change-event]
-  (impl/-request version-change-event))
 
 (defn on
   ([event-target type listener]

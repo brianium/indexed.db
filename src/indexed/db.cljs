@@ -6,7 +6,8 @@
             [indexed.db.key-range :as key-range]
             [indexed.db.request :as request]
             [indexed.db.store :as store]
-            [indexed.db.txn :as transaction])
+            [indexed.db.txn :as transaction]
+            [indexed.db.impl.protocols :as impl])
   (:refer-clojure :exclude [key update get count]))
 
 ;;; IDBFactory
@@ -157,7 +158,7 @@
 
 (defn create-version-change-event
   [js-event]
-  (events/create-version-change-event js-event create-request))
+  (events/create-version-change-event js-event))
 
 (defn new-version
   [version-change-event]
@@ -168,8 +169,11 @@
   (events/old-version version-change-event))
 
 (defn get-request
-  [version-change-event]
-  (events/request version-change-event))
+  [belongs-to-request]
+  (some->
+   belongs-to-request
+   (impl/-idb-request)
+   (create-request)))
 
 (defn event-target?
   [x]
@@ -351,7 +355,7 @@
   ([store item key]
    (store/put store item key)))
 
-;;; Shared functions
+;;; Special cases
 
 (defn delete
   ([cursor]
@@ -366,3 +370,11 @@
    (database/create-object-store db name))
   ([js-idb-store]
    (store/create-object-store js-idb-store)))
+
+(defn source
+  [x]
+  (when-some [src (impl/-source x)]
+    (cond
+      (instance? js/IDBObjectStore src) (create-object-store src)
+      (instance? js/IDBIndex src) (store/create-index* src)
+      :else nil)))

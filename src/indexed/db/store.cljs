@@ -194,8 +194,8 @@
     (request/create-request (.clear idb-store)))
   (-create-index
     [_ index-name key-path object-parameters]
-    (let [key-path* (if-some [kp (seq key-path)]
-                      (apply array kp)
+    (let [key-path* (if (coll? key-path)
+                      (apply array key-path)
                       key-path)
           idb-index (.createIndex idb-store index-name key-path* (clj->index-parameters object-parameters))]
       (create-index* idb-index)))
