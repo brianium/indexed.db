@@ -229,10 +229,6 @@
   [js-idb-transaction]
   (transaction/create-transaction js-idb-transaction))
 
-(defn object-store
-  [txn name]
-  (transaction/object-store txn name))
-
 (defn get-transaction
   [belongs-to-txn]
   (transaction/transaction belongs-to-txn))
@@ -370,6 +366,12 @@
    (database/create-object-store db name))
   ([js-idb-store]
    (store/create-object-store js-idb-store)))
+
+(defn object-store
+  ([txn name]
+   (transaction/object-store txn name))
+  ([index]
+   (get-object-store index)))
 
 (defn source
   [x]
