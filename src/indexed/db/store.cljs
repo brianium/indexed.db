@@ -117,11 +117,13 @@
   (-open-key-cursor [_ query direction] (open-key-cursor object-store query direction))
 
   impl/IDBIndex
-  (-auto-locale? [_] (.isAutoLocale idb-index))
-  (-locale [_] (.locale idb-index))
-  (-object-store-name [_] (.objectStore idb-index))
-  (-multi-entry? [_] (.multiEntry idb-index))
-  (-unique? [_] (.unique idb-index)))
+  (-auto-locale? [_] (.-isAutoLocale idb-index))
+  (-locale [_] (.-locale idb-index))
+  (-multi-entry? [_] (.-multiEntry idb-index))
+  (-unique? [_] (.-unique idb-index))
+
+  impl/BelongsToObjectStore
+  (-idb-object-store [_] (.-objectStore idb-index)))
 
 (defn index?
   [x]
@@ -140,10 +142,6 @@
 (defn locale
   [index]
   (impl/-locale index))
-
-(defn object-store-name
-  [index]
-  (impl/-object-store-name index))
 
 (defn multi-entry?
   [index]
@@ -269,3 +267,8 @@
    (impl/-put store item nil))
   ([store item key]
    (impl/-put store item key)))
+
+(defn get-object-store
+  [index]
+  (create-object-store
+   (impl/-idb-object-store index)))

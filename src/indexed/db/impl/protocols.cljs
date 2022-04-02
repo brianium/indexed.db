@@ -64,10 +64,12 @@
   (-index [self index-name])
   (-put [self item key]))
 
+(defprotocol BelongsToObjectStore
+  (-idb-object-store [self]))
+
 (defprotocol IDBIndex
   (-auto-locale? [self])
   (-locale [self])
-  (-object-store-name [self])
   (-multi-entry? [self])
   (-unique? [self]))
 

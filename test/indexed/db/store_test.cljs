@@ -176,8 +176,14 @@
                                   (done))))))
 
 (deftest test-getting-an-index
-  (let [todo-list (util/store @*db "toDoList")]
-    (is (indexed.db/index? (indexed.db/index todo-list "hours")))))
+  (let [todo-list (util/store @*db "toDoList")
+        index     (indexed.db/index todo-list "hours")]
+    (is (indexed.db/index? index))
+    (is (false? (indexed.db/unique? index)))
+    (is (false? (indexed.db/multi-entry? index)))
+    (is (indexed.db/store? (indexed.db/get-object-store index)))
+    #_(is (some? (indexed.db/locale index))) ;;; commentig out because locale properties are non-standard
+    #_(is (true? (indexed.db/auto-locale? index)))))
 
 (deftest test-open-cursor-no-args
   (async

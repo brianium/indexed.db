@@ -301,9 +301,9 @@
   [index]
   (store/locale index))
 
-(defn object-store-name
+(defn get-object-store
   [index]
-  (store/object-store-name index))
+  (store/get-object-store index))
 
 (defn multi-entry?
   [index]
