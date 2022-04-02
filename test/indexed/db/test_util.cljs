@@ -115,3 +115,17 @@
   (-> (store db "toDoList" "readwrite")
       (db/clear)
       (db/on "success" done)))
+
+(defn cursor-with-value
+  "Create a cursor with value from an event"
+  [e]
+  (some-> (indexed.db/event->request e)
+          (indexed.db/result)
+          (indexed.db/create-cursor-with-value)))
+
+(defn cursor
+  "Create a cursor with value from an event"
+  [e]
+  (some-> (indexed.db/event->request e)
+          (indexed.db/result)
+          (indexed.db/create-cursor)))

@@ -31,12 +31,6 @@
      done
      (util/reset-tasks @*db done))})
 
-(defn cursor-with-value
-  [e]
-  (some-> (indexed.db/event->request e)
-          (indexed.db/result)
-          (indexed.db/create-cursor-with-value)))
-
 (deftest test-store-source
   (async
    done
@@ -45,7 +39,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)
+          (let [cursor (util/cursor-with-value e)
                 source (indexed.db/source cursor)]
             (is (indexed.db/store? source))
             (done)))))))
@@ -59,7 +53,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)
+          (let [cursor (util/cursor-with-value e)
                 source (indexed.db/source cursor)]
             (is (indexed.db/index? source))
             (done)))))))
@@ -72,7 +66,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)]
+          (let [cursor (util/cursor-with-value e)]
             (is (= (indexed.db/direction cursor) "next"))
             (done)))))))
 
@@ -84,7 +78,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)]
+          (let [cursor (util/cursor-with-value e)]
             (is (= (indexed.db/key cursor) "Party hard"))
             (done)))))))
 
@@ -96,7 +90,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)]
+          (let [cursor (util/cursor-with-value e)]
             (is (= (indexed.db/primary-key cursor) "Party hard"))
             (done)))))))
 
@@ -108,7 +102,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)]
+          (let [cursor (util/cursor-with-value e)]
             (is (indexed.db/request? (indexed.db/get-request cursor)))
             (done)))))))
 
@@ -121,7 +115,7 @@
          (indexed.db/on
           "success"
           (fn [e]
-            (when-some [cursor (cursor-with-value e)]
+            (when-some [cursor (util/cursor-with-value e)]
               (indexed.db/advance cursor 1)
               (when (= 2 (swap! *iteration inc))
                 (is (= (indexed.db/key cursor) "Read that book"))
@@ -136,7 +130,7 @@
          (indexed.db/on
           "success"
           (fn [e]
-            (when-some [cursor (cursor-with-value e)]
+            (when-some [cursor (util/cursor-with-value e)]
               (indexed.db/continue cursor)
               (when (= 2 (swap! *iteration inc))
                 (is (= (indexed.db/key cursor) "Read that book"))
@@ -151,7 +145,7 @@
          (indexed.db/on
           "success"
           (fn [e]
-            (let [cursor           (cursor-with-value e)
+            (let [cursor           (util/cursor-with-value e)
                   iterated?        (< 0 @*iteration)]
               (when-not iterated?
                 (indexed.db/continue cursor "Walk dog"))
@@ -171,7 +165,7 @@
          (indexed.db/on
           "success"
           (fn [e]
-            (let [cursor           (cursor-with-value e)
+            (let [cursor           (util/cursor-with-value e)
                   iteration        (swap! *iteration inc)]
               (cond
                 (= 1 iteration) (do
@@ -190,7 +184,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (-> (cursor-with-value e)
+          (-> (util/cursor-with-value e)
               (indexed.db/delete)
               (indexed.db/on "success" done)))))))
 
@@ -202,7 +196,7 @@
        (indexed.db/on
         "success"
         (fn [e]
-          (let [cursor (cursor-with-value e)
+          (let [cursor (util/cursor-with-value e)
                 record (indexed.db/value cursor)]
             (set! (.-month record) "April")
             (-> cursor

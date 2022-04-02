@@ -171,9 +171,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog") 2)
        (indexed.db/on "success" (fn [e]
-                              (is (= 2 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
-                              (done))))))
+                                  (is (= 2 (count (indexed.db/result
+                                                   (indexed.db/event->request e)))))
+                                  (done))))))
 
 (deftest test-getting-an-index
   (let [todo-list (util/store @*db "toDoList")]
@@ -185,12 +185,12 @@
    (let [todo-list (util/store @*db "toDoList")]
      (-> (indexed.db/open-cursor todo-list)
          (indexed.db/on "success" (fn [e]
-                                (let [value (-> (indexed.db/event->request e)
-                                                (indexed.db/result)
-                                                (indexed.db/create-cursor-with-value)
-                                                (indexed.db/value))]
-                                  (is (= "Party hard" (.-taskTitle value)))
-                                  (done))))))))
+                                    (let [value (-> (indexed.db/event->request e)
+                                                    (indexed.db/result)
+                                                    (indexed.db/create-cursor-with-value)
+                                                    (indexed.db/value))]
+                                      (is (= "Party hard" (.-taskTitle value)))
+                                      (done))))))))
 
 (deftest test-open-cursor-with-query
   (async
@@ -199,20 +199,18 @@
          *iteration (atom 0)]
      (-> (indexed.db/open-cursor todo-list (indexed.db/bound "Read that book" "Walk dog"))
          (indexed.db/on "success" (fn [e]
-                                (let [cursor    (some-> (indexed.db/event->request e)
-                                                        (indexed.db/result)
-                                                        (indexed.db/create-cursor-with-value))
-                                      iteration (swap! *iteration inc)]
-                                  (if-not (< iteration 3)
-                                    (do
-                                      (is (nil? cursor))
-                                      (done))
-                                    (do
-                                      (cond
-                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
-                                        (= iteration 2) (is (= "Walk dog" (.-taskTitle (indexed.db/value cursor))))
-                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (indexed.db/continue cursor))))))))))
+                                    (let [cursor    (util/cursor-with-value e)
+                                          iteration (swap! *iteration inc)]
+                                      (if-not (< iteration 3)
+                                        (do
+                                          (is (nil? cursor))
+                                          (done))
+                                        (do
+                                          (cond
+                                            (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
+                                            (= iteration 2) (is (= "Walk dog" (.-taskTitle (indexed.db/value cursor))))
+                                            :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                          (indexed.db/continue cursor))))))))))
 
 (deftest test-open-cursor-with-query-and-direction
   (async
@@ -221,20 +219,18 @@
          *iteration (atom 0)]
      (-> (indexed.db/open-cursor todo-list (indexed.db/upper-bound "Read that book") "prev")
          (indexed.db/on "success" (fn [e]
-                                (let [cursor    (some-> (indexed.db/event->request e)
-                                                        (indexed.db/result)
-                                                        (indexed.db/create-cursor-with-value))
-                                      iteration (swap! *iteration inc)]
-                                  (if-not (< iteration 3)
-                                    (do
-                                      (is (nil? cursor))
-                                      (done))
-                                    (do
-                                      (cond
-                                        (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
-                                        (= iteration 2) (is (= "Party hard" (.-taskTitle (indexed.db/value cursor))))
-                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (indexed.db/continue cursor))))))))))
+                                    (let [cursor    (util/cursor-with-value e)
+                                          iteration (swap! *iteration inc)]
+                                      (if-not (< iteration 3)
+                                        (do
+                                          (is (nil? cursor))
+                                          (done))
+                                        (do
+                                          (cond
+                                            (= iteration 1) (is (= "Read that book" (.-taskTitle (indexed.db/value cursor))))
+                                            (= iteration 2) (is (= "Party hard" (.-taskTitle (indexed.db/value cursor))))
+                                            :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                          (indexed.db/continue cursor))))))))))
 
 (deftest test-open-key-cursor-no-args
   (async
@@ -242,12 +238,9 @@
    (let [todo-list (util/store @*db "toDoList")]
      (-> (indexed.db/open-key-cursor todo-list)
          (indexed.db/on "success" (fn [e]
-                                (let [k (-> (indexed.db/event->request e)
-                                            (indexed.db/result)
-                                            (indexed.db/create-cursor)
-                                            (indexed.db/key))]
-                                  (is (= "Party hard" k))
-                                  (done))))))))
+                                    (let [k (indexed.db/key (util/cursor e))]
+                                      (is (= "Party hard" k))
+                                      (done))))))))
 
 (deftest test-open-key-cursor-with-query
   (async
@@ -256,20 +249,18 @@
          *iteration (atom 0)]
      (-> (indexed.db/open-key-cursor todo-list (indexed.db/bound "Read that book" "Walk dog"))
          (indexed.db/on "success" (fn [e]
-                                (let [cursor    (some-> (indexed.db/event->request e)
-                                                        (indexed.db/result)
-                                                        (indexed.db/create-cursor))
-                                      iteration (swap! *iteration inc)]
-                                  (if-not (< iteration 3)
-                                    (do
-                                      (is (nil? cursor))
-                                      (done))
-                                    (do
-                                      (cond
-                                        (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
-                                        (= iteration 2) (is (= "Walk dog" (indexed.db/key cursor)))
-                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (indexed.db/continue cursor))))))))))
+                                    (let [cursor    (util/cursor e)
+                                          iteration (swap! *iteration inc)]
+                                      (if-not (< iteration 3)
+                                        (do
+                                          (is (nil? cursor))
+                                          (done))
+                                        (do
+                                          (cond
+                                            (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
+                                            (= iteration 2) (is (= "Walk dog" (indexed.db/key cursor)))
+                                            :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                          (indexed.db/continue cursor))))))))))
 
 (deftest test-open-key-cursor-with-query-and-direction
   (async
@@ -278,20 +269,18 @@
          *iteration (atom 0)]
      (-> (indexed.db/open-key-cursor todo-list (indexed.db/upper-bound "Read that book") "prev")
          (indexed.db/on "success" (fn [e]
-                                (let [cursor    (some-> (indexed.db/event->request e)
-                                                        (indexed.db/result)
-                                                        (indexed.db/create-cursor))
-                                      iteration (swap! *iteration inc)]
-                                  (if-not (< iteration 3)
-                                    (do
-                                      (is (nil? cursor))
-                                      (done))
-                                    (do
-                                      (cond
-                                        (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
-                                        (= iteration 2) (is (= "Party hard" (indexed.db/key cursor)))
-                                        :else           (throw (ex-info "Unexpected cursor iteration" {})))
-                                      (indexed.db/continue cursor))))))))))
+                                    (let [cursor    (util/cursor e)
+                                          iteration (swap! *iteration inc)]
+                                      (if-not (< iteration 3)
+                                        (do
+                                          (is (nil? cursor))
+                                          (done))
+                                        (do
+                                          (cond
+                                            (= iteration 1) (is (= "Read that book" (indexed.db/key cursor)))
+                                            (= iteration 2) (is (= "Party hard" (indexed.db/key cursor)))
+                                            :else           (throw (ex-info "Unexpected cursor iteration" {})))
+                                          (indexed.db/continue cursor))))))))))
 
 (deftest test-put
   (async
