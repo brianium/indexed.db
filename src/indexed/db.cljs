@@ -180,10 +180,8 @@
 
 (defn get-request
   [belongs-to-request]
-  (some->
-   belongs-to-request
-   (impl/-idb-request)
-   (create-request)))
+  (create-request
+   (impl/-idb-request belongs-to-request)))
 
 (defn event-target?
   [x]
