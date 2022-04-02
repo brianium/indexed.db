@@ -15,7 +15,12 @@
   (-name [_] (.-name store))
 
   impl/ReadableObjectStore
-  (-key-path [_] (.-keyPath store))
+  (-key-path
+    [_]
+    (let [kp (.-keyPath store)]
+      (if (array? kp)
+        (array-seq kp)
+        kp)))
   (-count
     [_ query]
     (if (some? query)

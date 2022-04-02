@@ -86,6 +86,10 @@
   impl/IDBCursorWithValue
   (-value [_] (.-value idb-cursor)))
 
+(defn cursor-with-value?
+  [x]
+  (satisfies? impl/IDBCursorWithValue x))
+
 (defn create-cursor-with-value
   [idb-cursor]
   (CursorWithValue.

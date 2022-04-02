@@ -34,6 +34,25 @@
   (let [todo-list (util/store @*db "toDoList")]
     (is (= "taskTitle" (indexed.db/key-path todo-list)))))
 
+(deftest test-key-path-as-sequence
+  (async
+   done
+   (util/test-connect
+    (str database-name "-key-test")
+    1
+    {:success
+     (fn [idb]
+       (let [db         (indexed.db/create-database idb)
+             txn        (indexed.db/transaction db ["test-store"])
+             test-store (indexed.db/object-store txn "test-store")]
+         (is (= ["a" "b"] (indexed.db/key-path test-store)))
+         (done)))
+
+     :upgradeneeded
+     (fn [idb]
+       (let [db (indexed.db/create-database idb)]
+         (indexed.db/create-object-store db "test-store" {:key-path ["a" "b"]})))})))
+
 (deftest test-name
   (let [todo-list (util/store @*db "toDoList")]
     (is (= "toDoList" (name todo-list)))))
@@ -53,7 +72,7 @@
    (-> (indexed.db/count (util/store @*db "toDoList"))
        (indexed.db/on "success" (fn [e]
                                   (is (= 3 (indexed.db/result
-                                            (indexed.db/event->request e))))
+                                            (util/event->request e))))
                                   (done))))))
 
 (deftest test-count-by-key
@@ -62,7 +81,7 @@
    (-> (indexed.db/count (util/store @*db "toDoList") "Walk dog")
        (indexed.db/on "success" (fn [e]
                                   (is (= 1 (indexed.db/result
-                                            (indexed.db/event->request e))))
+                                            (util/event->request e))))
                                   (done))))))
 
 (deftest test-delete-by-key
@@ -102,7 +121,7 @@
        (indexed.db/get "Walk dog")
        (indexed.db/on "success" (fn [e]
                                   (is (= "Walk dog" (.-taskTitle (indexed.db/result
-                                                                  (indexed.db/event->request e)))))
+                                                                  (util/event->request e)))))
                                   (done))))))
 
 (deftest test-get-key
@@ -112,7 +131,7 @@
        (indexed.db/get-key "Walk dog")
        (indexed.db/on "success" (fn [e]
                                   (is (= "Walk dog" (indexed.db/result
-                                                     (indexed.db/event->request e))))
+                                                     (util/event->request e))))
                                   (done))))))
 
 (deftest test-get-all-no-key
@@ -122,7 +141,7 @@
        (indexed.db/get-all)
        (indexed.db/on "success" (fn [e]
                               (is (= 3 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
+                                               (util/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-with-key
@@ -132,7 +151,7 @@
        (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog"))
        (indexed.db/on "success" (fn [e]
                               (is (= 3 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
+                                               (util/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-with-key-and-count
@@ -142,7 +161,7 @@
        (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog") 2)
        (indexed.db/on "success" (fn [e]
                               (is (= 2 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
+                                               (util/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-no-key
@@ -152,7 +171,7 @@
        (indexed.db/get-all-keys)
        (indexed.db/on "success" (fn [e]
                               (is (= 3 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
+                                               (util/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-with-key
@@ -162,7 +181,7 @@
        (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog"))
        (indexed.db/on "success" (fn [e]
                               (is (= 3 (count (indexed.db/result
-                                               (indexed.db/event->request e)))))
+                                               (util/event->request e)))))
                               (done))))))
 
 (deftest test-get-all-keys-with-key-and-count
@@ -172,7 +191,7 @@
        (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog") 2)
        (indexed.db/on "success" (fn [e]
                                   (is (= 2 (count (indexed.db/result
-                                                   (indexed.db/event->request e)))))
+                                                   (util/event->request e)))))
                                   (done))))))
 
 (deftest test-getting-an-index
@@ -191,7 +210,7 @@
    (let [todo-list (util/store @*db "toDoList")]
      (-> (indexed.db/open-cursor todo-list)
          (indexed.db/on "success" (fn [e]
-                                    (let [value (-> (indexed.db/event->request e)
+                                    (let [value (-> (util/event->request e)
                                                     (indexed.db/result)
                                                     (indexed.db/create-cursor-with-value)
                                                     (indexed.db/value))]
@@ -297,7 +316,7 @@
       task-req
       "success"
       (fn [e]
-        (let [request (indexed.db/event->request e)
+        (let [request (util/event->request e)
               task    (indexed.db/result request)]
           (set! (.-notified task) "yes")
           (-> (indexed.db/put todo-list task)

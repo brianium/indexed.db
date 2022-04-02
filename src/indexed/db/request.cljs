@@ -43,7 +43,3 @@
 (defn ready-state
   [db-request]
   (impl/-ready-state db-request))
-
-(defn from-event
-  [e]
-  (create-request (.-target e)))
