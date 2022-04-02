@@ -15,6 +15,12 @@
   (-object-store-names [self])
   (-transaction [self store-names mode options]))
 
+(defprotocol HasErrors
+  (-error [self]))
+
+(defprotocol BelongsToDatabase
+  (-idb-database [self]))
+
 (defprotocol IDBKeyRange
   (-includes [_ k])
   (-idb-key-range [_]))
@@ -23,7 +29,6 @@
   (-source [self]))
 
 (defprotocol IDBRequest
-  (-error [self])
   (-result [self])
   (-ready-state [self]))
 
@@ -74,7 +79,11 @@
   (-unique? [self]))
 
 (defprotocol IDBTransaction
-  (-object-store [self name]))
+  (-durability [self])
+  (-mode [self])
+  (-object-store [self name])
+  (-abort [self])
+  (-commit [self]))
 
 (defprotocol BelongsToTransaction
   (-idb-transaction [self]))

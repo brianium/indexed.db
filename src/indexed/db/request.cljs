@@ -5,15 +5,17 @@
   impl/EventTarget
   (-target [_] request)
 
+  impl/HasErrors
+  (-error
+   [_]
+   (.-error request))
+
   impl/BelongsToSource
   (-source
    [_]
    (.-source request))
 
   impl/IDBRequest
-  (-error
-    [_]
-    (.-error request))
   (-result
     [_]
     (.-result request))
@@ -33,10 +35,6 @@
 (defn create-request
   [request]
   (Request. request))
-
-(defn error
-  [db-request]
-  (impl/-error db-request))
 
 (defn result
   [db-request]

@@ -81,3 +81,8 @@
    (transaction db store-names mode {}))
   ([db store-names]
    (transaction db store-names "readonly")))
+
+(defn db
+  [belongs-to-database]
+  (create-database
+   (impl/-idb-database belongs-to-database)))

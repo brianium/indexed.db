@@ -52,6 +52,14 @@
   [x]
   (database/database? x))
 
+(defn db
+  [belongs-to-database]
+  (database/db belongs-to-database))
+
+(defn get-database
+  [belongs-to-database]
+  (db belongs-to-database))
+
 (defn create-database
   [js-idb]
   (database/create-database js-idb))
@@ -65,8 +73,10 @@
   (database/delete-object-store db name))
 
 (defn object-store-names
-  [db]
-  (database/object-store-names db))
+  [x]
+  (cond-> x
+    (satisfies? impl/IDBTransaction x) (db)
+    :always (database/object-store-names)))
 
 (defn version
   [db]
@@ -143,8 +153,8 @@
   (request/from-event e))
 
 (defn error
-  [db-request]
-  (request/error db-request))
+  [has-errors]
+  (impl/-error has-errors))
 
 (defn result
   [db-request]
@@ -232,6 +242,22 @@
 (defn get-transaction
   [belongs-to-txn]
   (transaction/transaction belongs-to-txn))
+
+(defn durability
+  [txn]
+  (transaction/durability txn))
+
+(defn mode
+  [txn]
+  (transaction/mode txn))
+
+(defn abort
+  [txn]
+  (transaction/abort txn))
+
+(defn commit
+  [txn]
+  (transaction/commit txn))
 
 ;;; IDBIndex/IDBObjectStore
 
