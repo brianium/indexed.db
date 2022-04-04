@@ -21,8 +21,8 @@
       (db/on "error" error)
       (db/on "blocked" blocked)
       (db/on "success"
-       (fn []
-         (open db-name db-version {:success success :upgradeneeded upgradeneeded})))))
+             (fn []
+               (open db-name db-version {:success success :upgradeneeded upgradeneeded})))))
 
 (defn transaction
   ([db mode]
@@ -43,9 +43,9 @@
            rest (next items)]
       (when (some? item)
         (db/on (db/add object-store (clj->js item)) "success"
-                   (fn []
-                     (when (= (count items) (swap! *counter inc))
-                       (done))))
+               (fn []
+                 (when (= (count items) (swap! *counter inc))
+                   (done))))
         (recur (first rest) (next rest))))))
 
 ;;; Fixture helpers

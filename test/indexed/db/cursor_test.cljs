@@ -28,8 +28,8 @@
                                  :notified  "no"}))
    :after
    (async
-     done
-     (util/reset-tasks @*db done))})
+    done
+    (util/reset-tasks @*db done))})
 
 (deftest test-store-source
   (async

@@ -20,7 +20,7 @@
        (fn [idb]
          (reset! *db (db/create-database idb))
          (done))
-       
+
        :upgradeneeded
        (fn [idb]
          (let [db (db/create-database idb)]
@@ -65,7 +65,7 @@
          (is (= 1 (count names)))
          (is (seq (filter #(= "toDoList" %) names)))
          (done)))
-     
+
      :upgradeneeded
      (fn [idb]
        (let [db (db/create-database idb)]
@@ -87,13 +87,13 @@
    (util/test-connect
     (str database-name "-transaction-test")
     1
-    {:success 
+    {:success
      (fn [idb]
        (let [db (db/create-database idb)]
          (db/close db)
          (is (thrown? js/DOMException (db/transaction db ["test-store"])))
          (done)))
-     
+
      :upgradeneeded
      (fn [idb]
        (let [db (db/create-database idb)]

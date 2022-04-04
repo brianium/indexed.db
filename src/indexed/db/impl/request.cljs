@@ -7,13 +7,13 @@
 
   impl/HasErrors
   (error
-   [_]
-   (.-error request))
+    [_]
+    (.-error request))
 
   impl/BelongsToSource
   (source
-   [_]
-   (.-source request))
+    [_]
+    (.-source request))
 
   impl/IDBRequest
   (result
@@ -22,7 +22,7 @@
   (ready-state
     [_]
     (.-readyState request))
-  
+
   impl/BelongsToTransaction
   (idb-transaction
     [_]

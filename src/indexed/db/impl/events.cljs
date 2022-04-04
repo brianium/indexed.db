@@ -5,7 +5,7 @@
   impl/IDBVersionChangeEvent
   (new-version [_] (.-newVersion js-event))
   (old-version [_] (.-oldVersion js-event))
-  
+
   impl/BelongsToRequest
   (idb-request [_] (.-target js-event)))
 

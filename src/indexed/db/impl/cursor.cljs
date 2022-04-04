@@ -72,7 +72,7 @@
 
   impl/BelongsToSource
   (source [_] (.-source idb-cursor))
-  
+
   impl/IDBCursor
   (direction [_] (direction cursor))
   (key [_] (key cursor))
@@ -82,7 +82,7 @@
   (continue-primary-key [_ k primary-key] (continue-primary-key cursor k primary-key))
   (delete [_] (delete cursor))
   (update [_ value] (update cursor value))
-  
+
   impl/IDBCursorWithValue
   (value [_] (.-value idb-cursor)))
 

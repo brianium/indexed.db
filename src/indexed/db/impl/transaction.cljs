@@ -21,9 +21,9 @@
     [_ name]
     (store/create-object-store
      (.objectStore idb-transaction name)))
-  
+
   (abort [_] (.abort idb-transaction))
-  
+
   (commit [_] (.commit idb-transaction)))
 
 (defn transaction?

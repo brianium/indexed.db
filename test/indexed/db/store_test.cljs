@@ -140,9 +140,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all)
        (indexed.db/on "success" (fn [e]
-                              (is (= 3 (count (indexed.db/result
-                                               (util/event->request e)))))
-                              (done))))))
+                                  (is (= 3 (count (indexed.db/result
+                                                   (util/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-all-with-key
   (async
@@ -150,9 +150,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog"))
        (indexed.db/on "success" (fn [e]
-                              (is (= 3 (count (indexed.db/result
-                                               (util/event->request e)))))
-                              (done))))))
+                                  (is (= 3 (count (indexed.db/result
+                                                   (util/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-all-with-key-and-count
   (async
@@ -160,9 +160,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all (indexed.db/bound "Party hard" "Walk dog") 2)
        (indexed.db/on "success" (fn [e]
-                              (is (= 2 (count (indexed.db/result
-                                               (util/event->request e)))))
-                              (done))))))
+                                  (is (= 2 (count (indexed.db/result
+                                                   (util/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-all-keys-no-key
   (async
@@ -170,9 +170,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all-keys)
        (indexed.db/on "success" (fn [e]
-                              (is (= 3 (count (indexed.db/result
-                                               (util/event->request e)))))
-                              (done))))))
+                                  (is (= 3 (count (indexed.db/result
+                                                   (util/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-all-keys-with-key
   (async
@@ -180,9 +180,9 @@
    (-> (util/store @*db "toDoList")
        (indexed.db/get-all-keys (indexed.db/bound "Party hard" "Walk dog"))
        (indexed.db/on "success" (fn [e]
-                              (is (= 3 (count (indexed.db/result
-                                               (util/event->request e)))))
-                              (done))))))
+                                  (is (= 3 (count (indexed.db/result
+                                                   (util/event->request e)))))
+                                  (done))))))
 
 (deftest test-get-all-keys-with-key-and-count
   (async

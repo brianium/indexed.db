@@ -277,7 +277,7 @@
 
 (defn continue
   "Advances the cursor to the next position along its direction, to the item whose key matches
-   the optional key parameter"  
+   the optional key parameter"
   ([cursor k]
    (cursor/continue cursor k))
   ([cursor]
