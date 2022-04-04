@@ -1,4 +1,4 @@
-(ns indexed.db.txn-test
+(ns indexed.db.transaction-test
   (:require [cljs.test :refer [deftest is async use-fixtures]]
             [indexed.db :as indexed.db]
             [indexed.db.test-util :as util]))

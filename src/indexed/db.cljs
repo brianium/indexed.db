@@ -1,14 +1,14 @@
 (ns indexed.db
   (:require [cljs.spec.alpha :as s]
-            [indexed.db.cursor :as cursor]
-            [indexed.db.database :as database]
-            [indexed.db.events :as events]
-            [indexed.db.factory :as factory]
-            [indexed.db.key-range :as key-range]
-            [indexed.db.request :as request]
+            [indexed.db.impl.cursor :as cursor]
+            [indexed.db.impl.database :as database]
+            [indexed.db.impl.events :as events]
+            [indexed.db.impl.factory :as factory]
+            [indexed.db.impl.key-range :as key-range]
+            [indexed.db.impl.request :as request]
             [indexed.db.spec :as db.spec]
-            [indexed.db.store :as store]
-            [indexed.db.txn :as transaction]
+            [indexed.db.impl.store :as store]
+            [indexed.db.impl.transaction :as transaction]
             [indexed.db.impl.protocols :as impl])
   (:refer-clojure :exclude [key update get count]))
 
@@ -368,7 +368,7 @@
   "If a type stores an error for failed operations, this function
    will return it."
   [has-errors]
-  (impl/-error has-errors))
+  (impl/error has-errors))
 
 (s/fdef error
   :args (s/cat :has-errors ::db.spec/has-errors)
@@ -449,7 +449,7 @@
    an IDBVersionChangeEvent or IDBVersionChangeEvent implementation"
   [belongs-to-request]
   (create-request
-   (impl/-idb-request belongs-to-request)))
+   (impl/idb-request belongs-to-request)))
 
 (s/fdef get-request
   :args (s/cat ::belongs-to-request ::db.spec/belongs-to-request)
@@ -1025,7 +1025,7 @@
   
    In the case of a request, returns the source of the request, such as an index or an object store."
   [x]
-  (when-some [src (impl/-source x)]
+  (when-some [src (impl/source x)]
     (cond
       (instance? js/IDBObjectStore src) (create-object-store src)
       (instance? js/IDBIndex src) (store/create-index* src)

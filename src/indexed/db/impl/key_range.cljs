@@ -1,15 +1,15 @@
-(ns indexed.db.key-range
+(ns indexed.db.impl.key-range
   "@TODO add property accessors and tests"
   (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype KeyRange [key-range]
   impl/IDBKeyRange
-  (-includes [_ k] (.includes key-range k))
-  (-lower [_] (.-lower key-range))
-  (-upper [_] (.-upper key-range))
-  (-lower-open? [_] (.-lowerOpen key-range))
-  (-upper-open? [_] (.-upperOpen key-range))
-  (-idb-key-range [_] key-range))
+  (includes [_ k] (.includes key-range k))
+  (lower [_] (.-lower key-range))
+  (upper [_] (.-upper key-range))
+  (lower-open? [_] (.-lowerOpen key-range))
+  (upper-open? [_] (.-upperOpen key-range))
+  (idb-key-range [_] key-range))
 
 (defn key-range?
   [x]
@@ -17,7 +17,7 @@
 
 (defn idb-key-range
   [key-range]
-  (impl/-idb-key-range key-range))
+  (impl/idb-key-range key-range))
 
 (defn create-key-range
   [key-range]
@@ -25,23 +25,23 @@
 
 (defn includes
   [key-range k]
-  (impl/-includes key-range k))
+  (impl/includes key-range k))
 
 (defn lower
   [key-range]
-  (impl/-lower key-range))
+  (impl/lower key-range))
 
 (defn upper
   [key-range]
-  (impl/-upper key-range))
+  (impl/upper key-range))
 
 (defn lower-open?
   [key-range]
-  (impl/-lower-open? key-range))
+  (impl/lower-open? key-range))
 
 (defn upper-open?
   [key-range]
-  (impl/-upper-open? key-range))
+  (impl/upper-open? key-range))
 
 (defn bound
   ([lower upper lower-open? upper-open?]

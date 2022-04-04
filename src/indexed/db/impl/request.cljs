@@ -1,30 +1,30 @@
-(ns indexed.db.request
+(ns indexed.db.impl.request
   (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype Request [request]
   impl/EventTarget
-  (-target [_] request)
+  (target [_] request)
 
   impl/HasErrors
-  (-error
+  (error
    [_]
    (.-error request))
 
   impl/BelongsToSource
-  (-source
+  (source
    [_]
    (.-source request))
 
   impl/IDBRequest
-  (-result
+  (result
     [_]
     (.-result request))
-  (-ready-state
+  (ready-state
     [_]
     (.-readyState request))
   
   impl/BelongsToTransaction
-  (-idb-transaction
+  (idb-transaction
     [_]
     (.-transaction request)))
 
@@ -38,8 +38,8 @@
 
 (defn result
   [db-request]
-  (impl/-result db-request))
+  (impl/result db-request))
 
 (defn ready-state
   [db-request]
-  (impl/-ready-state db-request))
+  (impl/ready-state db-request))

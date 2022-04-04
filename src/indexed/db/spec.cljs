@@ -1,13 +1,13 @@
 (ns indexed.db.spec
   (:require [cljs.spec.alpha :as s]
-            [indexed.db.cursor :as cursor]
-            [indexed.db.database :as database]
-            [indexed.db.events :as events]
-            [indexed.db.factory :as factory]
-            [indexed.db.key-range :as key-range]
-            [indexed.db.request :as request]
-            [indexed.db.store :as store]
-            [indexed.db.txn :as txn]
+            [indexed.db.impl.cursor :as cursor]
+            [indexed.db.impl.database :as database]
+            [indexed.db.impl.events :as events]
+            [indexed.db.impl.factory :as factory]
+            [indexed.db.impl.key-range :as key-range]
+            [indexed.db.impl.request :as request]
+            [indexed.db.impl.store :as store]
+            [indexed.db.impl.transaction :as txn]
             [indexed.db.impl.protocols :as impl]))
 
 (s/def ::factory factory/factory?)
