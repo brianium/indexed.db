@@ -508,6 +508,42 @@
   :args (s/cat :key-range ::db.spec/key-range :k any?)
   :ret  boolean?)
 
+(defn lower
+  "Returns the lower bound of the key range"
+  [key-range]
+  (key-range/lower key-range))
+
+(s/fdef lower
+  :args (s/cat :key-range ::db.spec/key-range)
+  :ret  any?)
+
+(defn upper
+  "Returns the upper bound of the key range"
+  [key-range]
+  (key-range/upper key-range))
+
+(s/fdef upper
+  :args (s/cat :key-range ::db.spec/key-range)
+  :ret  any?)
+
+(defn lower-open?
+  "Returns false if the lower-bound value is included in the key range"
+  [key-range]
+  (key-range/lower-open? key-range))
+
+(s/fdef lower-open?
+  :args (s/cat :key-range ::db.spec/key-range)
+  :ret  boolean?)
+
+(defn upper-open?
+  "Returns false if the upper-bound value is included in the key range"
+  [key-range]
+  (key-range/upper-open? key-range))
+
+(s/fdef upper-open?
+  :args (s/cat :key-range ::db.spec/key-range)
+  :ret  boolean?)
+
 (defn bound
   "Creates a new key range with the specified upper and lower bounds. The bounds can be open
    (that is, the bounds exclude the endpoint values) or closed (that is, the bounds include the endpoint values).

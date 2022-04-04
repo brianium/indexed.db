@@ -4,6 +4,7 @@
             [indexed.db.cursor-test]
             [indexed.db.database-test]
             [indexed.db.factory-test]
+            [indexed.db.key-range-test]
             [indexed.db.store-test]
             [indexed.db.txn-test]))
 
@@ -11,5 +12,6 @@
  'indexed.db.cursor-test
  'indexed.db.database-test
  'indexed.db.factory-test
+ 'indexed.db.key-range-test
  'indexed.db.store-test
  'indexed.db.txn-test)

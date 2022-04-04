@@ -23,6 +23,10 @@
 
 (defprotocol IDBKeyRange
   (-includes [_ k])
+  (-lower [_])
+  (-upper [_])
+  (-lower-open? [_])
+  (-upper-open? [_])
   (-idb-key-range [_]))
 
 (defprotocol BelongsToSource
