@@ -21,12 +21,16 @@
     (.cmp factory a b))
   (databases
     [_ fn-1]
-    (let [p (.databases factory)]
-      (-> p
-          (.then (fn [result]
-                   (cond-> result
-                     (array? result) (->> array-seq (map dict->map))
-                     :always         (fn-1))))))))
+    (if (type (.-databases factory))
+      (let [p (.databases factory)]
+        (-> p
+            (.then (fn [result]
+                     (cond-> result
+                       (array? result) (->> array-seq (map dict->map))
+                       :always         (fn-1))))))
+      (fn-1 '()))))
+
+(type (.-databases js/indexedDB))
 
 (defn factory?
   [x]

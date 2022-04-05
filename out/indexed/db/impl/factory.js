@@ -37,6 +37,7 @@ return self__.factory.cmp(a,b);
 (indexed.db.impl.factory.Factory.prototype.indexed$db$impl$protocols$IDBFactory$databases$arity$2 = (function (_,fn_1){
 var self__ = this;
 var ___$1 = this;
+if(cljs.core.truth_(cljs.core.type.call(null,self__.factory.databases))){
 var p = self__.factory.databases();
 return p.then((function (result){
 var G__667 = result;
@@ -44,6 +45,9 @@ var G__667__$1 = ((cljs.core.array_QMARK_.call(null,result))?cljs.core.map.call(
 return fn_1.call(null,G__667__$1);
 
 }));
+} else {
+return fn_1.call(null,cljs.core.List.EMPTY);
+}
 }));
 
 (indexed.db.impl.factory.Factory.getBasis = (function (){
@@ -65,6 +69,7 @@ indexed.db.impl.factory.__GT_Factory = (function indexed$db$impl$factory$__GT_Fa
 return (new indexed.db.impl.factory.Factory(factory));
 });
 
+cljs.core.type.call(null,indexedDB.databases);
 indexed.db.impl.factory.factory_QMARK_ = (function indexed$db$impl$factory$factory_QMARK_(x){
 if((!((x == null)))){
 if(((false) || ((cljs.core.PROTOCOL_SENTINEL === x.indexed$db$impl$protocols$IDBFactory$)))){
