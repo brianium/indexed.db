@@ -34,7 +34,7 @@
   (let [cmds (b/java-command
               {:basis (b/create-basis {:aliases [:dev] :project "deps.edn"})
                :main 'clojure.main
-               :main-args ["-m" "cljs.main" "--optimizations" "advanced" "-c" "cljs.user"]})]
+               :main-args ["-m" "cljs.main" "--optimizations" "none" "-co" "{:closure-defines {cljs-test-display.core/notifications false}}" "-c" "cljs.user"]})]
     (b/process cmds)))
 
 (defn demo [_]
