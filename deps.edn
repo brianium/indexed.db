@@ -13,8 +13,8 @@
                                  :pom-file  "target/classes/META-INF/maven/com.github.brianium/index.db/pom.xml"}}
            
            :dev    {:extra-paths ["dev" "test"]
-                    :extra-deps  {integrant/integrant    {:mvn/version "0.8.0"}
-                                  org.clojure/test.check {:mvn/version "1.1.1"}}}
+                    :extra-deps  {org.clojure/test.check        {:mvn/version "1.1.1"}
+                                  com.bhauman/cljs-test-display {:mvn/version "0.1.1"}}}
            
            :format {:extra-deps {cljfmt/cljfmt {:mvn/version "0.8.0"}}
                     :main-opts  ["-m" "cljfmt.main"]}}}
