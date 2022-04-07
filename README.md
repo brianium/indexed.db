@@ -18,7 +18,7 @@ The aim is to cover the entire API and allow ClojureScript programmers to progra
 This library provides:
 * A full [test suite](https://brianium.github.io/indexed.db/)
 * A function for every piece of functionality offered by IndexedDB
-* Name parity - i.e `window.indexedDB.open` becomes `(db/open)` and `transaction.objectStore` becomes `(db/object-store transaction)
+* Name parity - i.e `window.indexedDB.open` becomes `(db/open)` and `transaction.objectStore` becomes `(db/object-store transaction)`
 * Specs!
 * Documentation!
 
