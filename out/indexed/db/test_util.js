@@ -9,36 +9,36 @@ var request = indexed.db.get_request.call(null,event);
 return fn_2.call(null,indexed.db.result.call(null,request),indexed.db.get_transaction.call(null,request));
 });
 });
-indexed.db.test_util.open = (function indexed$db$test_util$open(db_name,db_version,p__787){
-var map__788 = p__787;
-var map__788__$1 = cljs.core.__destructure_map.call(null,map__788);
-var upgradeneeded = cljs.core.get.call(null,map__788__$1,new cljs.core.Keyword(null,"upgradeneeded","upgradeneeded",1003500472));
-var success = cljs.core.get.call(null,map__788__$1,new cljs.core.Keyword(null,"success","success",1890645906));
+indexed.db.test_util.open = (function indexed$db$test_util$open(db_name,db_version,p__761){
+var map__762 = p__761;
+var map__762__$1 = cljs.core.__destructure_map.call(null,map__762);
+var upgradeneeded = cljs.core.get.call(null,map__762__$1,new cljs.core.Keyword(null,"upgradeneeded","upgradeneeded",1003500472));
+var success = cljs.core.get.call(null,map__762__$1,new cljs.core.Keyword(null,"success","success",1890645906));
 var open_request = indexed.db.open.call(null,db_name,db_version);
-return indexed.db.on.call(null,indexed.db.on.call(null,indexed.db.on.call(null,open_request,"error",(function (p1__786_SHARP_){
-throw p1__786_SHARP_;
+return indexed.db.on.call(null,indexed.db.on.call(null,indexed.db.on.call(null,open_request,"error",(function (p1__760_SHARP_){
+throw p1__760_SHARP_;
 })),"upgradeneeded",indexed.db.test_util.handle_upgrade.call(null,upgradeneeded)),"success",(function (){
 return success.call(null,indexed.db.result.call(null,open_request));
 }));
 });
-indexed.db.test_util.test_connect = (function indexed$db$test_util$test_connect(db_name,db_version,p__790){
-var map__791 = p__790;
-var map__791__$1 = cljs.core.__destructure_map.call(null,map__791);
-var success = cljs.core.get.call(null,map__791__$1,new cljs.core.Keyword(null,"success","success",1890645906));
-var upgradeneeded = cljs.core.get.call(null,map__791__$1,new cljs.core.Keyword(null,"upgradeneeded","upgradeneeded",1003500472),cljs.core.constantly);
-var blocked = cljs.core.get.call(null,map__791__$1,new cljs.core.Keyword(null,"blocked","blocked",181326681),(function (){
+indexed.db.test_util.test_connect = (function indexed$db$test_util$test_connect(db_name,db_version,p__764){
+var map__765 = p__764;
+var map__765__$1 = cljs.core.__destructure_map.call(null,map__765);
+var success = cljs.core.get.call(null,map__765__$1,new cljs.core.Keyword(null,"success","success",1890645906));
+var upgradeneeded = cljs.core.get.call(null,map__765__$1,new cljs.core.Keyword(null,"upgradeneeded","upgradeneeded",1003500472),cljs.core.constantly);
+var blocked = cljs.core.get.call(null,map__765__$1,new cljs.core.Keyword(null,"blocked","blocked",181326681),(function (){
 throw "Blocked";
 }));
-var error = cljs.core.get.call(null,map__791__$1,new cljs.core.Keyword(null,"error","error",-978969032),(function (p1__789_SHARP_){
-throw p1__789_SHARP_;
+var error = cljs.core.get.call(null,map__765__$1,new cljs.core.Keyword(null,"error","error",-978969032),(function (p1__763_SHARP_){
+throw p1__763_SHARP_;
 }));
 return indexed.db.on.call(null,indexed.db.on.call(null,indexed.db.on.call(null,indexed.db.delete_database.call(null,db_name),"error",error),"blocked",blocked),"success",(function (){
 return indexed.db.test_util.open.call(null,db_name,db_version,new cljs.core.PersistentArrayMap(null, 2, [new cljs.core.Keyword(null,"success","success",1890645906),success,new cljs.core.Keyword(null,"upgradeneeded","upgradeneeded",1003500472),upgradeneeded], null));
 }));
 });
 indexed.db.test_util.transaction = (function indexed$db$test_util$transaction(var_args){
-var G__793 = arguments.length;
-switch (G__793) {
+var G__767 = arguments.length;
+switch (G__767) {
 case 2:
 return indexed.db.test_util.transaction.cljs$core$IFn$_invoke$arity$2((arguments[(0)]),(arguments[(1)]));
 
@@ -64,8 +64,8 @@ return indexed.db.test_util.transaction.call(null,db,"readonly");
 (indexed.db.test_util.transaction.cljs$lang$maxFixedArity = 2);
 
 indexed.db.test_util.store = (function indexed$db$test_util$store(var_args){
-var G__796 = arguments.length;
-switch (G__796) {
+var G__770 = arguments.length;
+switch (G__770) {
 case 3:
 return indexed.db.test_util.store.cljs$core$IFn$_invoke$arity$3((arguments[(0)]),(arguments[(1)]),(arguments[(2)]));
 
@@ -106,10 +106,10 @@ return null;
 });})(item,rest,_STAR_counter))
 );
 
-var G__798 = cljs.core.first.call(null,rest);
-var G__799 = cljs.core.next.call(null,rest);
-item = G__798;
-rest = G__799;
+var G__772 = cljs.core.first.call(null,rest);
+var G__773 = cljs.core.next.call(null,rest);
+item = G__772;
+rest = G__773;
 continue;
 } else {
 return null;
@@ -121,11 +121,11 @@ break;
  * Create a task db used for testing. This schema matches
  * the todo list store modeled at MDN. Result of connection will be stored in the *db atom
  */
-indexed.db.test_util.create_task_db = (function indexed$db$test_util$create_task_db(_STAR_db,done,p__800){
-var map__801 = p__800;
-var map__801__$1 = cljs.core.__destructure_map.call(null,map__801);
-var name = cljs.core.get.call(null,map__801__$1,new cljs.core.Keyword("db","name","db/name",1843678379));
-var version = cljs.core.get.call(null,map__801__$1,new cljs.core.Keyword("db","version","db/version",425264924));
+indexed.db.test_util.create_task_db = (function indexed$db$test_util$create_task_db(_STAR_db,done,p__774){
+var map__775 = p__774;
+var map__775__$1 = cljs.core.__destructure_map.call(null,map__775);
+var name = cljs.core.get.call(null,map__775__$1,new cljs.core.Keyword("db","name","db/name",1843678379));
+var version = cljs.core.get.call(null,map__775__$1,new cljs.core.Keyword("db","version","db/version",425264924));
 return indexed.db.test_util.test_connect.call(null,name,version,new cljs.core.PersistentArrayMap(null, 4, [new cljs.core.Keyword(null,"success","success",1890645906),(function (idb){
 cljs.core.reset_BANG_.call(null,_STAR_db,indexed.db.create_database.call(null,idb));
 
@@ -156,14 +156,14 @@ return done.call(null);
 });
 indexed.db.test_util.seed_tasks = (function indexed$db$test_util$seed_tasks(var_args){
 var args__4870__auto__ = [];
-var len__4864__auto___805 = arguments.length;
-var i__4865__auto___806 = (0);
+var len__4864__auto___779 = arguments.length;
+var i__4865__auto___780 = (0);
 while(true){
-if((i__4865__auto___806 < len__4864__auto___805)){
-args__4870__auto__.push((arguments[i__4865__auto___806]));
+if((i__4865__auto___780 < len__4864__auto___779)){
+args__4870__auto__.push((arguments[i__4865__auto___780]));
 
-var G__807 = (i__4865__auto___806 + (1));
-i__4865__auto___806 = G__807;
+var G__781 = (i__4865__auto___780 + (1));
+i__4865__auto___780 = G__781;
 continue;
 } else {
 }
@@ -181,13 +181,13 @@ return indexed.db.test_util.add_many.call(null,indexed.db.test_util.store.call(n
 (indexed.db.test_util.seed_tasks.cljs$lang$maxFixedArity = (2));
 
 /** @this {Function} */
-(indexed.db.test_util.seed_tasks.cljs$lang$applyTo = (function (seq802){
-var G__803 = cljs.core.first.call(null,seq802);
-var seq802__$1 = cljs.core.next.call(null,seq802);
-var G__804 = cljs.core.first.call(null,seq802__$1);
-var seq802__$2 = cljs.core.next.call(null,seq802__$1);
+(indexed.db.test_util.seed_tasks.cljs$lang$applyTo = (function (seq776){
+var G__777 = cljs.core.first.call(null,seq776);
+var seq776__$1 = cljs.core.next.call(null,seq776);
+var G__778 = cljs.core.first.call(null,seq776__$1);
+var seq776__$2 = cljs.core.next.call(null,seq776__$1);
 var self__4851__auto__ = this;
-return self__4851__auto__.cljs$core$IFn$_invoke$arity$variadic(G__803,G__804,seq802__$2);
+return self__4851__auto__.cljs$core$IFn$_invoke$arity$variadic(G__777,G__778,seq776__$2);
 }));
 
 indexed.db.test_util.reset_tasks = (function indexed$db$test_util$reset_tasks(db,done){
@@ -200,24 +200,24 @@ return indexed.db.create_request.call(null,e.target);
  * Create a cursor with value from an event
  */
 indexed.db.test_util.cursor_with_value = (function indexed$db$test_util$cursor_with_value(e){
-var G__808 = indexed.db.test_util.event__GT_request.call(null,e);
-var G__808__$1 = (((G__808 == null))?null:indexed.db.result.call(null,G__808));
-if((G__808__$1 == null)){
+var G__782 = indexed.db.test_util.event__GT_request.call(null,e);
+var G__782__$1 = (((G__782 == null))?null:indexed.db.result.call(null,G__782));
+if((G__782__$1 == null)){
 return null;
 } else {
-return indexed.db.create_cursor_with_value.call(null,G__808__$1);
+return indexed.db.create_cursor_with_value.call(null,G__782__$1);
 }
 });
 /**
  * Create a cursor with value from an event
  */
 indexed.db.test_util.cursor = (function indexed$db$test_util$cursor(e){
-var G__809 = indexed.db.test_util.event__GT_request.call(null,e);
-var G__809__$1 = (((G__809 == null))?null:indexed.db.result.call(null,G__809));
-if((G__809__$1 == null)){
+var G__783 = indexed.db.test_util.event__GT_request.call(null,e);
+var G__783__$1 = (((G__783 == null))?null:indexed.db.result.call(null,G__783));
+if((G__783__$1 == null)){
 return null;
 } else {
-return indexed.db.create_cursor.call(null,G__809__$1);
+return indexed.db.create_cursor.call(null,G__783__$1);
 }
 });
 

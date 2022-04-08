@@ -1,4 +1,4 @@
-(ns indexed.db.impl.request
+(ns ^:no-doc indexed.db.impl.request
   (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype Request [request]

@@ -127,8 +127,7 @@ goog.addDependency("../indexed/db/impl/transaction.js", ['indexed.db.impl.transa
 goog.addDependency("../indexed/db/impl/database.js", ['indexed.db.impl.database'], ['indexed.db.impl.protocols', 'indexed.db.impl.store', 'indexed.db.impl.transaction', 'cljs.core']);
 goog.addDependency("../indexed/db/impl/events.js", ['indexed.db.impl.events'], ['indexed.db.impl.protocols', 'cljs.core']);
 goog.addDependency("../indexed/db/impl/factory.js", ['indexed.db.impl.factory'], ['indexed.db.impl.request', 'indexed.db.impl.protocols', 'cljs.core']);
-goog.addDependency("../indexed/db/spec.js", ['indexed.db.spec'], ['cljs.spec.alpha', 'indexed.db.impl.cursor', 'indexed.db.impl.database', 'indexed.db.impl.events', 'indexed.db.impl.factory', 'indexed.db.impl.key_range', 'indexed.db.impl.request', 'indexed.db.impl.store', 'indexed.db.impl.transaction', 'indexed.db.impl.protocols', 'cljs.core']);
-goog.addDependency("../indexed/db.js", ['indexed.db'], ['cljs.spec.alpha', 'indexed.db.impl.cursor', 'indexed.db.impl.database', 'indexed.db.impl.events', 'indexed.db.impl.factory', 'indexed.db.impl.key_range', 'indexed.db.impl.request', 'indexed.db.spec', 'indexed.db.impl.store', 'indexed.db.impl.transaction', 'indexed.db.impl.protocols', 'cljs.core']);
+goog.addDependency("../indexed/db.js", ['indexed.db'], ['indexed.db.impl.cursor', 'indexed.db.impl.database', 'indexed.db.impl.events', 'indexed.db.impl.factory', 'indexed.db.impl.key_range', 'indexed.db.impl.request', 'indexed.db.impl.store', 'indexed.db.impl.transaction', 'indexed.db.impl.protocols', 'cljs.core']);
 goog.addDependency("../indexed/db/test_util.js", ['indexed.db.test_util'], ['indexed.db', 'cljs.core']);
 goog.addDependency("../indexed/db/cursor_test.js", ['indexed.db.cursor_test'], ['cljs.test', 'indexed.db', 'indexed.db.test_util', 'cljs.core']);
 goog.addDependency("../indexed/db/database_test.js", ['indexed.db.database_test'], ['cljs.test', 'indexed.db', 'indexed.db.test_util', 'cljs.core']);

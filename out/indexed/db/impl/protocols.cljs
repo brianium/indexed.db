@@ -1,4 +1,10 @@
 (ns indexed.db.impl.protocols
+  "Most of the protocols in this namespace map directly to native JS types
+   for the IndexedDB API. Where possible, JS properties and methods are mapped
+   to conventional Clojure names (i.e kebab case vs camel case).
+   
+   This library adds a handful of protocols, such as HasErrors, EventTarget, and the BelongsToX
+   protocols to address cross cutting concerns present in the native JS API."
   (:refer-clojure :exclude [count key get update]))
 
 (defprotocol IDBFactory
