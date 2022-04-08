@@ -1,3 +1,8 @@
+<p align="center">
+    <br>
+    <img width="128" height="128" src="indexeddb.gif">
+</p>
+
 # indexed.db
 
 It's just [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) for ClojureSript. No assumptions made. No clever macros. Just plain IndexedDB via ClojureScript.
