@@ -1,5 +1,5 @@
 {:paths   ["src"]
- :version "0.0.0"
+ :version "1.0.0"
  :deps    {org.clojure/clojurescript {:mvn/version "1.11.4"}
            org.clojure/core.async    {:mvn/version "1.5.648"}}
  :aliases {:build  {:deps       {io.github.clojure/tools.build {:git/tag "v0.7.2"
