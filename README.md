@@ -5,7 +5,7 @@
 
 # indexed.db
 
-It's just [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) for ClojureSript. No assumptions made. No clever macros. Just plain IndexedDB via ClojureScript.
+It's just [IndexedDB](https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API) for ClojureScript. No assumptions made. No clever macros. Just plain IndexedDB via ClojureScript.
 
 
 [![cljdoc badge](https://cljdoc.org/badge/com.github.brianium/indexed.db)](https://cljdoc.org/d/com.github.brianium/indexed.db/CURRENT) [![Clojars Project](https://img.shields.io/clojars/v/com.github.brianium/indexed.db.svg)](https://clojars.org/com.github.brianium/indexed.db)
