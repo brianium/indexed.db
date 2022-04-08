@@ -1,4 +1,4 @@
-(ns indexed.db.impl.events
+(ns ^:no-doc indexed.db.impl.events
   (:require [indexed.db.impl.protocols :as impl]))
 
 (deftype VersionChangeEvent [js-event]

@@ -1,4 +1,4 @@
-(ns indexed.db.impl.cursor
+(ns ^:no-doc indexed.db.impl.cursor
   (:require  [indexed.db.impl.request :as request]
              [indexed.db.impl.protocols :as impl])
   (:refer-clojure :exclude [key update]))

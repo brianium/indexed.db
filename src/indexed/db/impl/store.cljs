@@ -1,4 +1,4 @@
-(ns indexed.db.impl.store
+(ns ^:no-doc indexed.db.impl.store
   (:require [indexed.db.impl.key-range :as key-range]
             [indexed.db.impl.request :as request]
             [indexed.db.impl.protocols :as impl])

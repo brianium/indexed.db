@@ -1,4 +1,4 @@
-(ns indexed.db.impl.factory
+(ns ^:no-doc indexed.db.impl.factory
   (:require [indexed.db.impl.request :as request]
             [indexed.db.impl.protocols :as impl]))
 

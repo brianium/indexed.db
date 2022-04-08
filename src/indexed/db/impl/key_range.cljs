@@ -1,4 +1,4 @@
-(ns indexed.db.impl.key-range
+(ns ^:no-doc indexed.db.impl.key-range
   "@TODO add property accessors and tests"
   (:require [indexed.db.impl.protocols :as impl]))
 
